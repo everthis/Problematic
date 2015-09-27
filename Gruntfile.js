@@ -1,7 +1,5 @@
-/*jshint node:true*/
-
-// Generated on 2015-07-04 using
-// generator-webapp 0.6.2
+// Generated on 2015-09-27 using
+// generator-webapp 1.1.0
 'use strict';
 
 // # Globbing
@@ -17,13 +15,12 @@ module.exports = function (grunt) {
 
   // Automatically load required grunt tasks
   require('jit-grunt')(grunt, {
-      useminPrepare: 'grunt-usemin'
+    useminPrepare: 'grunt-usemin'
   });
 
   // Configurable paths
   var config = {
     app: 'app',
-    tmp: '.tmp',
     dist: 'dist'
   };
 
@@ -39,22 +36,20 @@ module.exports = function (grunt) {
         files: ['bower.json'],
         tasks: ['wiredep']
       },
-      js: {
+      babel: {
         files: ['<%= config.app %>/scripts/{,*/}*.js'],
-        tasks: ['jshint']
+        tasks: ['babel:dist']
       },
-      jstest: {
+      babelTest: {
         files: ['test/spec/{,*/}*.js'],
-        tasks: ['test:watch']
+        tasks: ['babel:test', 'test:watch']
       },
       gruntfile: {
         files: ['Gruntfile.js']
       },
-      // sass: {
-      compass: {
+      sass: {
         files: ['<%= config.app %>/styles/{,*/}*.{scss,sass}'],
-        // tasks: ['sass:server', 'postcss']
-        tasks: ['compass:server', 'postcss', 'csscomb:dist']
+        tasks: ['sass', 'postcss']
       },
       styles: {
         files: ['<%= config.app %>/styles/{,*/}*.css'],
@@ -65,15 +60,18 @@ module.exports = function (grunt) {
     browserSync: {
       options: {
         notify: false,
-        background: true
+        background: true,
+        watchOptions: {
+          ignored: ''
+        }
       },
       livereload: {
         options: {
           files: [
             '<%= config.app %>/{,*/}*.html',
-            '<%= config.app %>/styles/**/*.css',
+            '.tmp/styles/{,*/}*.css',
             '<%= config.app %>/images/{,*/}*',
-            '<%= config.app %>/scripts/{,*/}*.js'
+            '.tmp/scripts/{,*/}*.js'
           ],
           port: 9000,
           server: {
@@ -122,12 +120,8 @@ module.exports = function (grunt) {
     },
 
     // Make sure code styles are up to par and there are no obvious mistakes
-    jshint: {
-      options: {
-        jshintrc: '.jshintrc',
-        reporter: require('jshint-stylish')
-      },
-      all: [
+    eslint: {
+      target: [
         'Gruntfile.js',
         '<%= config.app %>/scripts/{,*/}*.js',
         '!<%= config.app %>/scripts/vendor/*',
@@ -145,66 +139,40 @@ module.exports = function (grunt) {
       }
     },
 
-    // Compiles Sass to CSS and generates necessary files if requested
-    // sass: {
-    //   options: {
-    //     indentedSyntax: true,
-    //     indentWidth: 4,
-    //     outputStyle: 'expanded',
-    //     sourceMap: true,
-    //     sourceMapEmbed: true,
-    //     sourceMapContents: true,
-    //     includePaths: ['bower_components']
-    //   },
-    //   dist: {
-    //     files: [{
-    //       expand: true,
-    //       cwd: '<%= config.app %>/styles',
-    //       src: ['*.{scss,sass}'],
-    //       dest: '.tmp/styles',
-    //       ext: '.css'
-    //     }]
-    //   },
-    //   server: {
-    //     files: [{
-    //       expand: true,
-    //       cwd: '<%= config.app %>/styles',
-    //       src: ['*.{scss,sass}'],
-    //       dest: '.tmp/styles',
-    //       ext: '.css'
-    //     }]
-    //   }
-    // },
-
-    compass: {
+    // Compiles ES6 with Babel
+    babel: {
       options: {
-        sassDir: '<%= config.app %>/styles',
-        cssDir: '.tmp/styles',
-        imagesDir: '<%= config.app %>/images',
-        javascriptsDir: '<%= config.app %>/scripts',
-        fontsDir: '<%= config.app %>/styles/fonts',
-        generatedImagesDir: '.tmp/images/generated',
-        importPath: 'bower_components',
-        httpImagesPath: '../images',
-        httpGeneratedImagesPath: '../images/generated',
-        httpFontsPath: 'fonts',
-        relativeAssets: false,
-        sourcemap: true,
-        assetCacheBuster: false
+        sourceMap: true
       },
       dist: {
-        options: {
-          sassDir: '<%= config.app %>/styles',
-          cssDir: '.tmp/styles',
-          sourcemap: false,
-          noLineComments: true,
-          generatedImagesDir: '<%= config.dist %>/images/generated'
-        }
+        files: [{
+          expand: true,
+          cwd: '<%= config.app %>/scripts',
+          src: '{,*/}*.js',
+          dest: '.tmp/scripts',
+          ext: '.js'
+        }]
       },
-      server: {
-        options: {
-          debugInfo: false
-        },
+      test: {
+        files: [{
+          expand: true,
+          cwd: 'test/spec',
+          src: '{,*/}*.js',
+          dest: '.tmp/spec',
+          ext: '.js'
+        }]
+      }
+    },
+
+    // Compiles Sass to CSS and generates necessary files if requested
+    sass: {
+      options: {
+        sourceMap: true,
+        sourceMapEmbed: true,
+        sourceMapContents: true,
+        includePaths: ['.']
+      },
+      dist: {
         files: [{
           expand: true,
           cwd: '<%= config.app %>/styles',
@@ -215,27 +183,13 @@ module.exports = function (grunt) {
       }
     },
 
-     csscomb: {
-        dist: {
-            expand: true,
-            cwd: '.tmp/styles/',
-            src: ['*.css', '!*.resorted.css'],
-            dest: '.tmp/styles/',
-            ext: '.css'
-            // files: {
-            //     '.tmp/css/*.css': ['.tmp/styles/*.css']
-            // }
-        }
-    },
-
     postcss: {
       options: {
         map: true,
         processors: [
           // Add vendor prefixed styles
-          require('autoprefixer-core')({
-            // browsers: ['> 1%', 'last 2 versions', 'Firefox ESR', 'Opera 12.1']  // for desktop
-            browsers: ['ios > 5']  // for mobile
+          require('autoprefixer')({
+            browsers: ['> 1%', 'last 2 versions', 'Firefox ESR']
           })
         ]
       },
@@ -249,25 +203,15 @@ module.exports = function (grunt) {
       }
     },
 
-    inline: {
-        dist: {
-            options:{
-                cssmin: false
-            },
-            src: '<%= config.app %>/redirect.html',
-            dest: '<%= config.dist %>/redirect.html'
-        }
-    },
-
     // Automatically inject Bower components into the HTML file
     wiredep: {
       app: {
-        src: ['<%= config.app %>/*.html'],
-        ignorePath: /^<%= config.app %>\/|\.\.\//
+        src: ['<%= config.app %>/index.html'],
+        ignorePath: /^(\.\.\/)*\.\./
       },
       sass: {
         src: ['<%= config.app %>/styles/{,*/}*.{scss,sass}'],
-        ignorePath: /(\.\.\/){1,2}bower_components\//
+        ignorePath: /^(\.\.\/)+/
       }
     },
 
@@ -291,7 +235,7 @@ module.exports = function (grunt) {
       options: {
         dest: '<%= config.dist %>'
       },
-      html: '<%= config.app %>/*.html'
+      html: '<%= config.app %>/index.html'
     },
 
     // Performs rewrites based on rev and the useminPrepare configuration
@@ -306,36 +250,6 @@ module.exports = function (grunt) {
       html: ['<%= config.dist %>/{,*/}*.html'],
       css: ['<%= config.dist %>/styles/{,*/}*.css']
     },
-
-    // Reads HTML for usemin blocks to enable smart builds that automatically
-       // concat, minify and revision files. Creates configurations in memory so
-       // additional tasks can operate on them
-       // useminPrepare: {
-       //   html: '<%= config.app %>/*.html',
-       //   options: {
-       //     dest: '<%= config.dist %>',
-       //     flow: {
-       //       html: {
-       //         steps: {
-       //           js: ['concat', 'uglifyjs'],
-       //           css: ['cssmin']
-       //         },
-       //         post: {}
-       //       }
-       //     }
-       //   }
-       // },
-
-       // // Performs rewrites based on filerev and the useminPrepare configuration
-       // usemin: {
-       //   html: ['<%= config.dist %>/{,*/}*.html'],
-       //   css: ['<%= config.dist %>/styles/{,*/}*.css'],
-       //   options: {
-       //     assetsDirs: ['<%= config.dist %>','<%= config.dist %>/images']
-       //   }
-       // },
-
-
 
     // The following *-min tasks produce minified files in the dist folder
     imagemin: {
@@ -363,16 +277,16 @@ module.exports = function (grunt) {
     htmlmin: {
       dist: {
         options: {
-          collapseBooleanAttributes: false,
-          collapseWhitespace: false,
-          conservativeCollapse: false,
-          removeAttributeQuotes: false,
-          removeCommentsFromCDATA: false,
-          removeEmptyAttributes: false,
-          removeOptionalTags: false,
+          collapseBooleanAttributes: true,
+          collapseWhitespace: true,
+          conservativeCollapse: true,
+          removeAttributeQuotes: true,
+          removeCommentsFromCDATA: true,
+          removeEmptyAttributes: true,
+          removeOptionalTags: true,
           // true would impact styles with attribute selectors
           removeRedundantAttributes: false,
-          useShortDoctype: false
+          useShortDoctype: true
         },
         files: [{
           expand: true,
@@ -389,7 +303,7 @@ module.exports = function (grunt) {
     // cssmin: {
     //   dist: {
     //     files: {
-    //       '<%= config.dist %>/styles/index.css': [
+    //       '<%= config.dist %>/styles/main.css': [
     //         '.tmp/styles/{,*/}*.css',
     //         '<%= config.app %>/styles/{,*/}*.css'
     //       ]
@@ -430,52 +344,19 @@ module.exports = function (grunt) {
     // Run some tasks in parallel to speed up build process
     concurrent: {
       server: [
-        // 'sass:server'
-        'compass:server'
+        'babel:dist',
+        'sass'
       ],
       test: [
+        'babel'
       ],
       dist: [
-        // 'sass',
-        'compass:dist',
+        'babel',
+        'sass',
         'imagemin',
         'svgmin'
       ]
-    },
-
-    rename: {
-      main: {
-        files: [
-            {src: ['<%= config.dist %>/index.html'], dest: '<%= config.dist %>/yly.tpl'},
-            {src: ['<%= config.dist %>/redirect.html'], dest: '<%= config.dist %>/ylyActivity.tpl'},
-            {src: ['<%= config.dist %>/push_redirect.html'], dest: '<%= config.dist %>/ylyActivityPush.tpl'},
-            {src: ['<%= config.dist %>/signup_success.html'], dest: '<%= config.dist %>/ylySignupSuccess.tpl'}
-        ]
-      }
-    },
-
-    'string-replace': {
-      inline: {
-        files: {
-          '<%= config.dist %>/': '<%= config.dist %>/**.tpl',
-        },
-        options: {
-          replacements: [
-            {
-              pattern: 'href="styles/',
-              replacement: 'href="{%$tplData.fe%}styles/'
-            }, {
-              pattern: /url\('images/g,
-              replacement: "url('{%$tplData.fe%}images"
-            }, {
-              pattern: '<script src="scripts/',
-              replacement: '<script src="{%$tplData.fe%}scripts/'
-            }
-          ]
-        }
-      }
     }
-
   });
 
 
@@ -490,7 +371,6 @@ module.exports = function (grunt) {
       'wiredep',
       'concurrent:server',
       'postcss',
-      'csscomb:dist',
       'browserSync:livereload',
       'watch'
     ]);
@@ -523,18 +403,16 @@ module.exports = function (grunt) {
     'concurrent:dist',
     'postcss',
     'concat',
-    'cssmin', // comment it if something is wrong
+    'cssmin',
     'uglify',
     'copy:dist',
     'filerev',
     'usemin',
     'htmlmin'
-    // 'string-replace',
-    // 'rename'
   ]);
 
   grunt.registerTask('default', [
-    'newer:jshint',
+    'newer:eslint',
     'test',
     'build'
   ]);
