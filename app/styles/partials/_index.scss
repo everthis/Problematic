@@ -1,6 +1,3 @@
-body {
-	// background-color: red;
-}
 /** use border-box globally. */
 html {
   box-sizing: border-box;
@@ -9,16 +6,34 @@ html {
   box-sizing: inherit;
 }
 
+#app {
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
 i {
     cursor: pointer;
 }
 .layer {
-    display: block;
+    display: inline-block;
     margin: 0 0 1em 0;
+    width: 23em;
+    border-right: 1px solid #ddd;
 }
 .leaf {
+    display: block;
     padding: 0 .5em;
     position: relative;
+    margin: 0 0 2em 0;
+    .remove-child {
+        padding: 0 .5em;
+    }
+    .add-child {
+        padding: 0 .5em;
+    }
+    .gap-mark {
+        padding: 0 .5em;
+    }
     .leaf-key {
         padding: 0 1em;
     }

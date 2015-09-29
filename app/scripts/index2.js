@@ -1,25 +1,13 @@
-var layerTpl = '<span class="layer">' +
-                  '<span class="leaf" data-key="" data-value="">' +
-                      '<i class="remove-child" onclick="delChild(this)">-</i>' +
-                      '<input type="text" class="leaf-key" placeholder="key" />' +
-                      '<i>---</i>' +
-                      '<input type="text" class="leaf-value" placeholder="value" />' +
-                      '<i class="add-child" onclick="addChild(this)">+</i>' +
-                      '<i class="add-sibling" onclick="addSibling(this)">+</i>' +
-                  '</span>' +
-              '</span>';
-
-var leafTpl = '<span class="leaf" data-key="" data-value="">' +
-                   '<i class="remove-child" onclick="delChild(this)">-</i>' +
-                   '<input type="text" class="leaf-key" placeholder="key" />' +
-                   '<i>---</i>' +
-                   '<input type="text" class="leaf-value" placeholder="value" />' +
-                   '<i class="add-child" onclick="addChild(this)">+</i>' +
-                   '<i class="add-sibling" onclick="addSibling(this)">+</i>' +
-              '</span>';
+'use strict';
+var leafContentTpl = '<i class="remove-child" onclick="delChild(this)">-</i>' +
+                     '<input type="text" class="leaf-key" placeholder="key" />' +
+                     '<i class="gap-mark">---</i>' +
+                     '<input type="text" class="leaf-value" placeholder="value" />' +
+                     '<i class="add-child" onclick="addChild(this)">+</i>' +
+                     '<i class="add-sibling" onclick="addSibling(this)">+</i>';
 
 var $app = document.getElementById('app');
-$app.innerHTML = layerTpl;
+$app.appendChild(createLayer());
 // $app.addEventListener('click', listener)
 
 function closest(el, selector) {
@@ -47,15 +35,40 @@ function closest(el, selector) {
 }
 
 function delChild(ctx) {
-    console.log(ctx);
+    var currentLayer = ctx.closest('.layer');
+    var currentLeaf = ctx.closest('.leaf');
+    if (currentLayer.firstChild === currentLayer.lastChild) {
+      $app.removeChild(currentLayer);
+    } else {
+      currentLayer.removeChild(currentLeaf);
+    };
 }
 function addChild(ctx) {
-    console.log(cl);
+    $app.appendChild(createLayer());
+}
 
+function createLayer() {
+  var newLayer = document.createDocumentFragment();
+  var newLayerSpan = document.createElement('span');
+      newLayerSpan.setAttribute('class', 'layer'); 
+      newLayerSpan.appendChild(generateLeafSpan());
+      newLayer.appendChild(newLayerSpan);
+  return newLayer;
+}
+function generateLeafSpan() {
+  var newLeafSpan = document.createElement('span');
+      newLeafSpan.setAttribute('class', 'leaf');
+      newLeafSpan.setAttribute('data-key', "");
+      newLeafSpan.setAttribute('data-value', "");
+      newLeafSpan.innerHTML = leafContentTpl;
+  return newLeafSpan;
+}
+function createLeaf() {
+  var newLeaf = document.createDocumentFragment();
+      newLeaf.appendChild(generateLeafSpan());
+  return newLeaf;
 }
 function addSibling(ctx) {
     var currentLayer = ctx.closest('.layer');
-    var newLeaf = document.createDocumentFragment();
-    newLeaf.innerHTML = leafTpl;
-    currentLayer.appendChild(newLeaf);
+    currentLayer.appendChild(createLeaf());
 }
