@@ -12,6 +12,10 @@ html {
 i {
     cursor: pointer;
 }
+.layer {
+    display: block;
+    margin: 0 0 1em 0;
+}
 .leaf {
     padding: 0 .5em;
     position: relative;
