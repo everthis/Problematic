@@ -15,16 +15,16 @@ i {
     cursor: pointer;
 }
 .layer {
-    display: inline-block;
     margin: 0 0 1em 0;
     width: 23em;
     border-right: 1px solid #ddd;
 }
 .leaf {
-    display: block;
+    display: inline-block;
+    height: 2em;
     padding: 0 .5em;
     position: relative;
-    margin: 0 0 2em 0;
+    margin: 0 0 1.3em 0;
     .remove-child {
         padding: 0 .5em;
     }
@@ -39,7 +39,7 @@ i {
     }
     .add-sibling {
         position: absolute;
-        top: 150%;
+        top: 130%;
         left: 50%;
         transform: translate(-50%, -50%);
     }
