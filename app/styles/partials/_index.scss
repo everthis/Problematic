@@ -7,8 +7,8 @@ html {
 }
 
 #app {
-    overflow-x: auto;
-    white-space: nowrap;
+    // overflow-x: auto;
+    // white-space: nowrap;
 }
 
 i {
@@ -23,7 +23,7 @@ i {
     display: inline-block;
     height: 2em;
     padding: 0 .5em;
-    position: relative;
+    position: absolute;
     margin: 0 0 1.3em 0;
     .remove-child {
         padding: 0 .5em;
