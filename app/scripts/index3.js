@@ -18,7 +18,7 @@ var initRectObj = {
       height: 0
 };
 
-$app.appendChild(createLeaf("__root", 1, initRectObj));
+$app.appendChild(createLeaf("__root", 1, 0, initRectObj));
 
 function initApiTree() {
     var apiTree = new Tree("_root");
@@ -38,37 +38,40 @@ function delChild(ctx) {
 function addChild(ctx) {
     leafIndex += 1;
     var parentIdex = +ctx.parentNode.dataset.index;
+    var nodeLevel = +ctx.parentNode.dataset.level + 1;
     apiTree.add(leafIndex, parentIdex, apiTree.traverseBF);
     var rectObj = nodeLeftOffset(ctx.parentNode);
     var clonedRectObj = cloneRectObj(rectObj);
     clonedRectObj.bottom = clonedRectObj.bottom - clonedRectObj.height;
-    $app.appendChild(createLeaf(parentIdex, leafIndex, clonedRectObj));
+    $app.appendChild(createLeaf(parentIdex, leafIndex, nodeLevel, clonedRectObj));
 }
 
-function generateLeafSpan(parentId, nodeIndex, rectObj) {
+function generateLeafSpan(parentId, nodeIndex, nodeLevel, rectObj) {
   var newLeafSpan = document.createElement('span');
       newLeafSpan.setAttribute('class', 'leaf');
       newLeafSpan.setAttribute('data-parent', parentId);
       newLeafSpan.setAttribute('data-index', nodeIndex);
+      newLeafSpan.setAttribute('data-level', nodeLevel);
       newLeafSpan.style.transform = 'translate(' + rectObj.right + 'px, ' + rectObj.bottom + 'px)';
       newLeafSpan.innerHTML = leafContentTpl;
   return newLeafSpan;
 }
-function createLeaf(parentIdx, nodeIdx, rectObj) {
+function createLeaf(parentIdx, nodeIdx, nodeLevel, rectObj) {
   var newLeaf = document.createDocumentFragment();
-      newLeaf.appendChild(generateLeafSpan(parentIdx, nodeIdx, rectObj));
+      newLeaf.appendChild(generateLeafSpan(parentIdx, nodeIdx, nodeLevel, rectObj));
   return newLeaf;
 }
 function addSibling(ctx) {
     leafIndex += 1;
     var parentIdx = +ctx.parentNode.dataset.parent;
+    var nodeLevel = +ctx.parentNode.dataset.level;
     parentIdx = isNaN(parentIdx) ? "__root" : parentIdx;
     apiTree.add(leafIndex, parentIdx, apiTree.traverseBF);
     var rectObj = nodeLeftOffset(ctx.parentNode);
     var clonedRectObj = cloneRectObj(rectObj);
     clonedRectObj.right = clonedRectObj.right - clonedRectObj.width;
     clonedRectObj.bottom += 30;
-    $app.appendChild(createLeaf(parentIdx, leafIndex, clonedRectObj));
+    $app.appendChild(createLeaf(parentIdx, leafIndex, nodeLevel, clonedRectObj));
 }
 
 /* utils */
