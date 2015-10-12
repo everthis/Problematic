@@ -1,5 +1,5 @@
 'use strict';
-var leafContentTpl = '<i class="remove-child" onclick="delChild(this)">-</i>' +
+var leafContentTpl = '<i class="remove-child" onclick="delNode(this)">-</i>' +
                      '<input type="text" class="leaf-key" placeholder="key" />' +
                      '<i class="gap-mark">---</i>' +
                      '<input type="text" class="leaf-value" placeholder="value" />' +
@@ -18,32 +18,76 @@ var initRectObj = {
       height: 0
 };
 
-$app.appendChild(createLeaf("__root", 1, 0, initRectObj));
+$app.appendChild(createLeaf("_data_root", 1, 0, initRectObj));
 
 function initApiTree() {
     var apiTree = new Tree("_root");
         apiTree.add({status: 0}, "_root", apiTree.traverseBF);
         apiTree.add({statusInfo: "OK"}, "_root", apiTree.traverseBF);
         apiTree.add("_data_root", "_root", apiTree.traverseBF);
-        apiTree.add("__root", "_data_root", apiTree.traverseBF);
-        apiTree.add(1, "__root", apiTree.traverseBF);
+        apiTree.add(1, "_data_root", apiTree.traverseBF);
 
     return apiTree;
 } 
 
-function delChild(ctx) {
+function delNode(ctx) {
     var currentLeaf = ctx.closest('.leaf');
-        $app.removeChild(currentLeaf);
+    var currentIdx = +ctx.parentNode.dataset.index;
+    var parentIdx = +ctx.parentNode.dataset.parent;
+
+    var nodesArr = apiTree.traverseDescendants(currentIdx);
+    var idxArr = nodesArrToIdxArr(nodesArr);
+    console.log(idxArr);
+        apiTree.remove(currentIdx, parentIdx, apiTree.traverseBF);
+        removeNodesFromDom(idxArr);
+        // $app.removeChild(currentLeaf);
+}
+function removeNodesFromDom(arr) {
+    var allLeaves = $app.getElementsByClassName('leaf');
+    for (var i = 0; i < allLeaves.length; i++) {
+      if (arr.indexOf(+allLeaves[i].dataset.index) !== -1) {
+          $app.removeChild(allLeaves[i]);
+      }
+    };
+}
+function nodesArrToIdxArr(nodesArr) {
+    var nodesArrLen = nodesArr.length;
+    var idxArr = [];
+    for (var i = 0; i < nodesArrLen; i++) {
+        idxArr.push(nodesArr[i].data);
+    };
+    return idxArr;
 }
 function addChild(ctx) {
     leafIndex += 1;
     var parentIdex = +ctx.parentNode.dataset.index;
     var nodeLevel = +ctx.parentNode.dataset.level + 1;
+    
+    // apiTree operation
     apiTree.add(leafIndex, parentIdex, apiTree.traverseBF);
-    var rectObj = nodeLeftOffset(ctx.parentNode);
-    var clonedRectObj = cloneRectObj(rectObj);
-    clonedRectObj.bottom = clonedRectObj.bottom - clonedRectObj.height;
+
+    var clonedRectObj = cloneRectObj( nodeLeftOffset(ctx.parentNode) );
+    var childrenNodes = apiTree.traverseDirectChild(parentIdex);
+
+    var childrenIdxArr = [];
+    for(var perNode in childrenNodes._storage){
+      if ( (typeof parseInt(perNode) === "number") && childrenNodes._storage[perNode].hasOwnProperty('data')) {
+          childrenIdxArr.push(childrenNodes._storage[perNode].data);
+      };
+    }
+
+    var childrenIdxArrLen = childrenIdxArr.length;
+
+    clonedRectObj.bottom = childrenIdxArrLen === 1 ? 
+                           clonedRectObj.bottom + clonedRectObj.height * (childrenIdxArrLen - 2) :
+                           clonedRectObj.bottom + clonedRectObj.height * (childrenIdxArrLen - 2) + (childrenIdxArrLen - 1) * 20;
     $app.appendChild(createLeaf(parentIdex, leafIndex, nodeLevel, clonedRectObj));
+
+
+
+
+    // var maxIdx = Math.max(...childrenIdxArr);
+    // console.log(maxIdx);
 }
 
 function generateLeafSpan(parentId, nodeIndex, nodeLevel, rectObj) {
@@ -65,7 +109,7 @@ function addSibling(ctx) {
     leafIndex += 1;
     var parentIdx = +ctx.parentNode.dataset.parent;
     var nodeLevel = +ctx.parentNode.dataset.level;
-    parentIdx = isNaN(parentIdx) ? "__root" : parentIdx;
+    parentIdx = isNaN(parentIdx) ? "_data_root" : parentIdx;
     apiTree.add(leafIndex, parentIdx, apiTree.traverseBF);
     var rectObj = nodeLeftOffset(ctx.parentNode);
     var clonedRectObj = cloneRectObj(rectObj);
@@ -104,3 +148,12 @@ function nodeLeftOffset(el) {
     return cloneElRectObject;
 }
 
+function getComputedTranslateY(obj) {
+    if(!window.getComputedStyle) return;
+    var style = getComputedStyle(obj),
+        transform = style.transform || style.webkitTransform || style.mozTransform;
+    var mat = transform.match(/^matrix3d\((.+)\)$/);
+    if(mat) return parseFloat(mat[1].split(', ')[13]);
+    mat = transform.match(/^matrix\((.+)\)$/);
+    return mat ? parseFloat(mat[1].split(', ')[5]) : 0;
+}
