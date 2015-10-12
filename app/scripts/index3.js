@@ -170,5 +170,13 @@ function maxNodesInLevels() {
           levelNodesObj[nodeLevelVal] = 1;
       };
     };
-    return levelNodesObj;
+    var levelArr = [];
+    for(var ln in levelNodesObj){
+      if (levelNodesObj.hasOwnProperty(ln)) {
+        levelArr.push(levelNodesObj[ln]);
+      };
+    }
+
+    return Math.max(...levelArr);
+    // return levelNodesObj;
 }
