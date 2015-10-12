@@ -33,7 +33,7 @@ function initApiTree() {
 function delNode(ctx) {
     var currentLeaf = ctx.closest('.leaf');
     var currentIdx = +ctx.parentNode.dataset.index;
-    var parentIdx = +ctx.parentNode.dataset.parent;
+    var parentIdx = isNaN(+ctx.parentNode.dataset.parent) ? "_data_root" : +ctx.parentNode.dataset.parent;
 
     var nodesArr = apiTree.traverseDescendants(currentIdx);
     var idxArr = nodesArrToIdxArr(nodesArr);
@@ -43,11 +43,12 @@ function delNode(ctx) {
         // $app.removeChild(currentLeaf);
 }
 function removeNodesFromDom(arr) {
-    var allLeaves = $app.getElementsByClassName('leaf');
-    for (var i = 0; i < allLeaves.length; i++) {
-      if (arr.indexOf(+allLeaves[i].dataset.index) !== -1) {
+    var allLeaves = Array.prototype.slice.call($app.getElementsByClassName('leaf'));
+    var allLeavesLen = allLeaves.length;
+    for (var i = 0; i < allLeavesLen; i++) {
+        if (arr.indexOf(+allLeaves[i].dataset.index) !== -1) {
           $app.removeChild(allLeaves[i]);
-      }
+        }      
     };
 }
 function nodesArrToIdxArr(nodesArr) {
@@ -156,4 +157,18 @@ function getComputedTranslateY(obj) {
     if(mat) return parseFloat(mat[1].split(', ')[13]);
     mat = transform.match(/^matrix\((.+)\)$/);
     return mat ? parseFloat(mat[1].split(', ')[5]) : 0;
+}
+
+function maxNodesInLevels() {
+    var allLeaves = Array.prototype.slice.call($app.getElementsByClassName('leaf'));
+    var levelNodesObj = {};
+    for (var i = 0; i < allLeaves.length; i++) {
+      var nodeLevelVal = allLeaves[i].dataset.level;
+      if (levelNodesObj.hasOwnProperty(nodeLevelVal)) {
+          levelNodesObj[nodeLevelVal] += 1;
+      } else {
+          levelNodesObj[nodeLevelVal] = 1;
+      };
+    };
+    return levelNodesObj;
 }
