@@ -162,13 +162,10 @@ function getComputedTranslateY(obj) {
 function maxNodesInLevels() {
     var allLeaves = Array.prototype.slice.call($app.getElementsByClassName('leaf'));
     var levelNodesObj = {};
+    var nodeLevelVal = '';
     for (var i = 0; i < allLeaves.length; i++) {
-      var nodeLevelVal = allLeaves[i].dataset.level;
-      if (levelNodesObj.hasOwnProperty(nodeLevelVal)) {
-          levelNodesObj[nodeLevelVal] += 1;
-      } else {
-          levelNodesObj[nodeLevelVal] = 1;
-      };
+       nodeLevelVal = allLeaves[i].dataset.level;
+       levelNodesObj[nodeLevelVal] = levelNodesObj.hasOwnProperty(nodeLevelVal) ? levelNodesObj[nodeLevelVal] + 1 : 1;
     };
     var levelArr = [];
     for(var ln in levelNodesObj){
@@ -178,5 +175,43 @@ function maxNodesInLevels() {
     }
 
     return Math.max(...levelArr);
-    // return levelNodesObj;
+}
+
+function maxNodesInLevel() {
+    var levelMaxObj = {};
+    var allRootLeavesIdxArr = [];
+    var levelNodes = {};
+    var rowMaxLevel = {};
+    var allLeaves = Array.prototype.slice.call($app.getElementsByClassName('leaf'));
+    for (var i = 0; i < allLeaves.length; i++) {
+      if (allLeaves[i].getAttribute('data-parent') === "_data_root") {
+        allRootLeavesIdxArr.push(+allLeaves[i].getAttribute('data-index'));
+      };      
+    };
+    for (var j = 0; j < allRootLeavesIdxArr.length; j++) {
+        levelNodes[allRootLeavesIdxArr[j]] = apiTree.traverseDescendants(allRootLeavesIdxArr[j]);      
+    };
+    for(var lv in levelNodes){
+        if (levelNodes.hasOwnProperty(lv)) {
+          levelNodes[lv] = nodesArrToIdxArr(levelNodes[lv]);
+        };
+    }
+
+    // for(var perRow in levelNodes){
+    //     if (levelNodes.hasOwnProperty(perRow)) {
+    //       for (var k = 0; k < levelNodes[perRow].length; k++) {
+    //         levelNodes[perRow][k]
+    //       };
+    //     };
+    // }
+
+
+
+
+        
+    return levelNodes;
+}
+
+function rearrangeNodes() {
+
 }

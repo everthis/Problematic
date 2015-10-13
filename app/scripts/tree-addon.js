@@ -1,8 +1,8 @@
-Tree.prototype.traverseDirectChild = function(nodeIdx) {
+Tree.prototype.traverseDirectChild = function(nodedata) {
     var queue = new Queue(),
     parent = null,
     callback = function(node) {
-        if (node.data === nodeIdx) {
+        if (node.data === nodedata) {
             parent = node;
         }
     };
@@ -19,11 +19,16 @@ Tree.prototype.traverseDirectChild = function(nodeIdx) {
     return queue;
 };
 
-Tree.prototype.traverseDescendants = function(nodeIdx) {
+/**
+ * [traverseDescendants description]
+ * @param  {[integer]} nodeData [description]
+ * @return {[array]}         [description]
+ */
+Tree.prototype.traverseDescendants = function(nodeData) {
     var queue = new Queue(),
         parent = null,
         callback = function(node) {
-            if (node.data === nodeIdx) {
+            if (node.data === nodeData) {
                 parent = node;
             }
         };
@@ -46,3 +51,71 @@ Tree.prototype.traverseDescendants = function(nodeIdx) {
 
     return descendantsArr;
 };
+
+Tree.prototype.maxLevels = function() {
+    var that = this;
+    var dataRootNodes = this.traverseDirectChild('_data_root');
+    var rowLevelObj = {};
+    var headIdxArr = [];
+    for(var drn in dataRootNodes._storage){
+        if (dataRootNodes._storage.hasOwnProperty(drn)) {
+            rowLevelObj[drn] = {};
+            rowLevelObj[drn]['head-idx'] = dataRootNodes._storage[drn].data;
+            headIdxArr.push(dataRootNodes._storage[drn].data);
+        };
+    }
+    console.log(headIdxArr);
+
+    function extractIdxFromQueue(queue) {
+        var childrenIdxArr = [];
+        for(var perNode in queue._storage) {
+          if ( (typeof parseInt(perNode) === "number") && queue._storage[perNode].hasOwnProperty('data')) {
+              childrenIdxArr.push(queue._storage[perNode].data);
+          };
+        }
+        return childrenIdxArr;
+    }
+
+    var levelNextColArr = [];
+
+    function getRowLevel(idx) {
+       var directChildrenQueue = that.traverseDirectChild(idx);
+       var directChildrenArr = extractIdxFromQueue(directChildrenQueue);
+       return directChildrenArr;
+    }
+
+    var ultimateArr = [];
+    var perHead = [];
+    (function recurse(arr) {
+
+        for (var i = 0; i < arr.length; i++) {
+            perHead = [];
+            levelNextColArr = getRowLevel(arr[i]);
+            perHead.push(getRowLevel(arr[i]).length);
+            if (i === (arr.length - 1)) {
+
+            };
+            
+            ultimateArr.push(perHead);
+        };
+
+
+
+    })(headIdxArr);
+
+    console.log(ultimateArr);
+
+
+
+
+
+    // (function recurse(currentNode) {
+    //     for (var i = 0, length = currentNode.children.length; i < length; i++) {
+    //         recurse(currentNode.children[i]);
+    //     }
+
+    //     callback(currentNode);
+
+    // })(this._root);
+
+}
