@@ -269,7 +269,7 @@ function rearrangeRows() {
     var originalX = 0;
     var originalY = 0;
     for (var i = 0; i < leaves.length; i++) {
-        leafIdx = leaves[i].dataset.index;
+        leafIdx = +(leaves[i].dataset.index);
         for (var j = 0; j < rowNodesArr.length; j++) {
           if (rowNodesArr[j].indexOf(leafIdx) !== -1 ) {
             break;
@@ -283,15 +283,7 @@ function rearrangeRows() {
 
         leaves[i].style["transform"] = 'translate3d(' + originalX + 'px, ' + (whichRow * 62 + originalY) + 'px, 0)';
 
-
-
-
-
-
-
     };
-
-
 
     return rowNodesArr;
 
