@@ -64,7 +64,6 @@ Tree.prototype.maxLevels = function() {
             headIdxArr.push(dataRootNodes._storage[drn].data);
         };
     }
-    console.log(headIdxArr);
 
     function extractIdxFromQueue(queue) {
         var childrenIdxArr = [];
@@ -86,36 +85,38 @@ Tree.prototype.maxLevels = function() {
 
     var ultimateArr = [];
     var perHead = [];
+
+    function nextLevelChildren(arr) {
+        var nextLevelChildrenArr = [];
+        for (var i = 0; i < arr.length; i++) {
+            var perNum = getRowLevel(arr[i]);
+            nextLevelChildrenArr = nextLevelChildrenArr.concat(perNum);
+        };
+        if (nextLevelChildrenArr.length) {
+            perHead.push(nextLevelChildrenArr.length);
+            nextLevelChildren(nextLevelChildrenArr);
+        };
+    }
+
+
+
     (function recurse(arr) {
 
         for (var i = 0; i < arr.length; i++) {
             perHead = [];
+            // level 1
             levelNextColArr = getRowLevel(arr[i]);
-            perHead.push(getRowLevel(arr[i]).length);
-            if (i === (arr.length - 1)) {
-
+            perHead.push(1);
+            if (levelNextColArr.length) {
+                perHead.push(levelNextColArr.length);
+                nextLevelChildren(levelNextColArr);
             };
-            
             ultimateArr.push(perHead);
         };
-
-
-
     })(headIdxArr);
 
     console.log(ultimateArr);
 
 
-
-
-
-    // (function recurse(currentNode) {
-    //     for (var i = 0, length = currentNode.children.length; i < length; i++) {
-    //         recurse(currentNode.children[i]);
-    //     }
-
-    //     callback(currentNode);
-
-    // })(this._root);
 
 }
