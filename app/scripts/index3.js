@@ -244,7 +244,14 @@ function maxNodesInLevel() {
 function setOffset() {
 
 }
+function offsetLevel(currentRow, rowLevelArr) {
+    var offsetY = 0;
+    for (var i = 0; i < currentRow; i++) {
+      offsetY += rowLevelArr[i] * 52;
+    };
 
+    return offsetY;
+}
 function rearrangeRows() {
     // max level per row
     var rowMaxLevelArr = apiTree.maxLevels();
@@ -268,8 +275,10 @@ function rearrangeRows() {
     var whichRow = 0;
     var originalX = 0;
     var originalY = 0;
+    var levelOffSet = 0;
     for (var i = 0; i < leaves.length; i++) {
         leafIdx = +(leaves[i].dataset.index);
+        whichRow = 0;
         for (var j = 0; j < rowNodesArr.length; j++) {
           if (rowNodesArr[j].indexOf(leafIdx) !== -1 ) {
             break;
@@ -281,7 +290,9 @@ function rearrangeRows() {
         originalX = getTranslateX(leaves[i]);
         originalY = getTranslateY(leaves[i]);
 
-        leaves[i].style["transform"] = 'translate3d(' + originalX + 'px, ' + (whichRow * 62 + originalY) + 'px, 0)';
+        levelOffSet = offsetLevel(whichRow, rowMaxLevelArr);
+
+        leaves[i].style["transform"] = 'translate3d(' + originalX + 'px, ' + levelOffSet + 'px, 0)';
 
     };
 
