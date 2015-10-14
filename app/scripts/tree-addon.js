@@ -115,8 +115,5 @@ Tree.prototype.maxLevels = function() {
         };
     })(headIdxArr);
 
-    console.log(ultimateArr);
-
-
-
+    return ultimateArr;
 }

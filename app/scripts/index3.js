@@ -59,6 +59,16 @@ function nodesArrToIdxArr(nodesArr) {
     };
     return idxArr;
 }
+
+function queueNodesToArr(queue) {
+  var childrenIdxArr = [];
+  for(var perNode in queue._storage){
+    if ( (typeof parseInt(perNode) === "number") && queue._storage[perNode].hasOwnProperty('data')) {
+        childrenIdxArr.push(queue._storage[perNode].data);
+    };
+  }
+  return childrenIdxArr;
+}
 function addChild(ctx) {
     leafIndex += 1;
     var parentIdex = +ctx.parentNode.dataset.index;
@@ -97,7 +107,7 @@ function generateLeafSpan(parentId, nodeIndex, nodeLevel, rectObj) {
       newLeafSpan.setAttribute('data-parent', parentId);
       newLeafSpan.setAttribute('data-index', nodeIndex);
       newLeafSpan.setAttribute('data-level', nodeLevel);
-      newLeafSpan.style.transform = 'translate(' + rectObj.right + 'px, ' + rectObj.bottom + 'px)';
+      newLeafSpan.style["transform"] = 'translate3d(' + Math.round(rectObj.right) + 'px, ' + Math.round(rectObj.bottom) + 'px, 0)';
       newLeafSpan.innerHTML = leafContentTpl;
   return newLeafSpan;
 }
@@ -149,7 +159,38 @@ function nodeLeftOffset(el) {
     return cloneElRectObject;
 }
 
-function getComputedTranslateY(obj) {
+function getTransform(el) {
+    var transform = window.getComputedStyle(el, null).getPropertyValue('-webkit-transform');
+    var results = transform.match(/matrix(?:(3d)\(-{0,1}\d+(?:, -{0,1}\d+)*(?:, (-{0,1}\d+))(?:, (-{0,1}\d+))(?:, (-{0,1}\d+)), -{0,1}\d+\)|\(-{0,1}\d+(?:, -{0,1}\d+)*(?:, (-{0,1}\d+))(?:, (-{0,1}\d+))\))/);
+
+    if(!results) return [0, 0, 0];
+    if(results[1] == '3d') return results.slice(2,5);
+
+    results.push(0);
+    return results.slice(5, 8); // returns the [X,Y,Z,1] values
+}
+
+function getTranslateX(el) {
+        // chrome won't use prefix
+        // var style_attr = browserPrefix() + 'transform';
+        var style_attr = 'transform';
+        var transform = window.getComputedStyle(el, null).getPropertyValue(style_attr);
+        var results = transform.match(/matrix(?:(3d)\(-{0,1}\d+(?:, -{0,1}\d+)*(?:, (-{0,1}\d+))(?:, (-{0,1}\d+))(?:, (-{0,1}\d+)), -{0,1}\d+\)|\(-{0,1}\d+(?:, -{0,1}\d+)*(?:, (-{0,1}\d+))(?:, (-{0,1}\d+))\))/);
+        if(!results) return [0, 0, 0];
+        if(results[1] === '3d') return results.slice(2,5);
+        results.push(0);
+        return +(results.slice(5, 8)[0]); // returns the [X,Y,Z,1] values
+}
+
+function browserPrefix() {
+    var ua = navigator.userAgent.toLowerCase(), prefix = "";
+        prefix = (ua.indexOf("chrome") >= 0 || window.openDatabase) ? "-webkit-" : (ua.indexOf("firefox") >= 0) ? "-moz-" : window.opera ? "-o-" : (document.all && navigator.userAgent.indexOf("Opera") === -1) ? "-ms-" : "";
+        console.log(prefix);
+        return prefix;
+
+}
+
+function getTranslateY(obj) {
     if(!window.getComputedStyle) return;
     var style = getComputedStyle(obj),
         transform = style.transform || style.webkitTransform || style.mozTransform;
@@ -197,21 +238,66 @@ function maxNodesInLevel() {
         };
     }
 
-    // for(var perRow in levelNodes){
-    //     if (levelNodes.hasOwnProperty(perRow)) {
-    //       for (var k = 0; k < levelNodes[perRow].length; k++) {
-    //         levelNodes[perRow][k]
-    //       };
-    //     };
-    // }
-
-
-
-
-        
     return levelNodes;
 }
 
+function setOffset() {
+
+}
+
+function rearrangeRows() {
+    // max level per row
+    var rowMaxLevelArr = apiTree.maxLevels();
+    for (var i = 0; i < rowMaxLevelArr.length; i++) {
+      rowMaxLevelArr[i] = getMaxOfArray(rowMaxLevelArr[i]);
+    };
+
+    // nodes per row
+    var dataRootNodes = apiTree.traverseDirectChild("_data_root");
+    var dataRootArr = queueNodesToArr(dataRootNodes);
+    var rowNodesArr = [];
+    for (var i = 0; i < dataRootArr.length; i++) {
+      var nodesArr = apiTree.traverseDescendants(dataRootArr[i]);
+      var idxArr = nodesArrToIdxArr(nodesArr);
+        rowNodesArr.push(idxArr);
+    };
+
+    // rearrange
+    var leaves = [].slice.call($app.getElementsByClassName('leaf'));
+    var leafIdx = 0;
+    var whichRow = 0;
+    var originalX = 0;
+    var originalY = 0;
+    for (var i = 0; i < leaves.length; i++) {
+        leafIdx = leaves[i].dataset.index;
+        for (var j = 0; j < rowNodesArr.length; j++) {
+          if (rowNodesArr[j].indexOf(leafIdx) !== -1 ) {
+            break;
+          } else {
+            whichRow += 1;
+          };
+        };
+
+        originalX = getTranslateX(leaves[i]);
+        originalY = getTranslateY(leaves[i]);
+
+        leaves[i].style["transform"] = 'translate3d(' + originalX + 'px, ' + (whichRow * 62 + originalY) + 'px, 0)';
+
+
+
+
+
+
+
+    };
+
+
+
+    return rowNodesArr;
+
+}
+
 function rearrangeNodes() {
+    
 
 }
