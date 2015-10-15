@@ -18,7 +18,11 @@ Tree.prototype.traverseDirectChild = function(nodedata) {
     }
     return queue;
 };
-
+Tree.prototype.traversePostOrder = function(){
+        // foreach n in node.children
+        //     post_order(n)
+        // print(node.text)
+};
 /**
  * [traverseDescendants description]
  * @param  {[integer]} nodeData [description]

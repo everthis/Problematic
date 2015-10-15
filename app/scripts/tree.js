@@ -19,6 +19,10 @@ function Node(data) {
     this.data = data;
     this.parent = null;
     this.children = [];
+    // added later
+    this.childrenlevel = 1;
+    this.column = 0;
+    this.totaloffsetylevel = 0;
 }
 
 Tree.prototype.traverseDF = function(callback) {
@@ -36,6 +40,40 @@ Tree.prototype.traverseDF = function(callback) {
 
         // step 1
     })(this._root);
+
+};
+
+// for those nodes who have children
+function calcChildrenLevels(node) {
+    var totalChildrenLevels = 0;
+    for (var i = 0; i < node.children.length; i++) {
+        totalChildrenLevels += node.children[i].childrenlevel;
+    };
+
+    return totalChildrenLevels;
+}
+Tree.prototype.calcChildrenLevel = function() {
+    var callback = function(node) {
+        node.childrenlevel = node.children.length > 0 ? calcChildrenLevels(node) : 1;
+        node.column = node.parent ? (node.parent.column + 1) : 0;
+    };
+
+    this.traverseDF(callback);
+};
+Tree.prototype.calcTotalOffsetYLevel = function() {
+    var dataRootChildrenQueue = this.traverseDirectChild("_data_root");
+    var newIdx = dataRootChildrenQueue._newestIndex;
+    var oldIdx = dataRootChildrenQueue._oldestIndex;
+    var nodesArr = [];
+
+    for (var i = oldIdx; i < newIdx; i++) {
+        nodesArr.push(dataRootChildrenQueue._storage[i]);
+    };
+
+    var callback = function() {
+            
+    };
+
 
 };
 
@@ -77,6 +115,8 @@ Tree.prototype.add = function(data, toData, traversal) {
     } else {
         throw new Error('Cannot add node to a non-existent parent.');
     }
+
+    this.calcChildrenLevel();
 };
 
 Tree.prototype.remove = function(data, fromData, traversal) {
@@ -104,6 +144,8 @@ Tree.prototype.remove = function(data, fromData, traversal) {
     } else {
         throw new Error('Parent does not exist.');
     }
+
+    this.calcChildrenLevel();
 
     return childToRemove;
 };

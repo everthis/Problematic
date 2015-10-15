@@ -21,10 +21,10 @@ var initRectObj = {
 $app.appendChild(createLeaf("_data_root", 1, 0, initRectObj));
 
 function initApiTree() {
-    var apiTree = new Tree("_root");
-        apiTree.add({status: 0}, "_root", apiTree.traverseBF);
-        apiTree.add({statusInfo: "OK"}, "_root", apiTree.traverseBF);
-        apiTree.add("_data_root", "_root", apiTree.traverseBF);
+    var apiTree = new Tree("_data_root");
+        // apiTree.add({status: 0}, "_root", apiTree.traverseBF);
+        // apiTree.add({statusInfo: "OK"}, "_root", apiTree.traverseBF);
+        // apiTree.add("_data_root", "_root", apiTree.traverseBF);
         apiTree.add(1, "_data_root", apiTree.traverseBF);
 
     return apiTree;
@@ -37,7 +37,6 @@ function delNode(ctx) {
 
     var nodesArr = apiTree.traverseDescendants(currentIdx);
     var idxArr = nodesArrToIdxArr(nodesArr);
-    console.log(idxArr);
         apiTree.remove(currentIdx, parentIdx, apiTree.traverseBF);
         removeNodesFromDom(idxArr);
         // $app.removeChild(currentLeaf);
