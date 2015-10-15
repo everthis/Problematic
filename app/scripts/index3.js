@@ -39,6 +39,9 @@ function delNode(ctx) {
     var idxArr = nodesArrToIdxArr(nodesArr);
         apiTree.remove(currentIdx, parentIdx, apiTree.traverseBF);
         removeNodesFromDom(idxArr);
+        
+    var obj = apiTree.applyStyle();
+        styleNodes(obj);
         // $app.removeChild(currentLeaf);
 }
 function removeNodesFromDom(arr) {
@@ -92,9 +95,8 @@ function addChild(ctx) {
                            clonedRectObj.bottom + clonedRectObj.height * (childrenIdxArrLen - 2) :
                            clonedRectObj.bottom + clonedRectObj.height * (childrenIdxArrLen - 2) + (childrenIdxArrLen - 1) * 20;
     $app.appendChild(createLeaf(parentIdex, leafIndex, nodeLevel, clonedRectObj));
-
-
-
+    var obj = apiTree.applyStyle();
+    styleNodes(obj);
 
     // var maxIdx = Math.max(...childrenIdxArr);
     // console.log(maxIdx);
@@ -115,6 +117,22 @@ function createLeaf(parentIdx, nodeIdx, nodeLevel, rectObj) {
       newLeaf.appendChild(generateLeafSpan(parentIdx, nodeIdx, nodeLevel, rectObj));
   return newLeaf;
 }
+function styleNodes(styleObj) {
+    var leaves = Array.prototype.slice.call($app.getElementsByClassName('leaf'));
+    var leafIdx, offsetY, originalX;
+
+    for (var i = 0; i < leaves.length; i++) {
+        originalX = getTranslateX(leaves[i]);
+        leafIdx = +(leaves[i].dataset.index);
+
+        for(var styleObjIdx in styleObj){
+            if (+styleObjIdx === leafIdx) {
+              offsetY = styleObj[styleObjIdx] * 52;
+            };
+        }
+        leaves[i].style["transform"] = 'translate3d(' + originalX + 'px, ' + offsetY + 'px, 0)';
+    };
+}
 function addSibling(ctx) {
     leafIndex += 1;
     var parentIdx = +ctx.parentNode.dataset.parent;
@@ -126,6 +144,8 @@ function addSibling(ctx) {
     clonedRectObj.right = clonedRectObj.right - clonedRectObj.width;
     clonedRectObj.bottom += 30;
     $app.appendChild(createLeaf(parentIdx, leafIndex, nodeLevel, clonedRectObj));
+    var obj = apiTree.applyStyle();
+    styleNodes(obj);
 }
 
 /* utils */

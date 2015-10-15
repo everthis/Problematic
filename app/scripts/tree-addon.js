@@ -18,6 +18,15 @@ Tree.prototype.traverseDirectChild = function(nodedata) {
     }
     return queue;
 };
+Tree.prototype.applyStyle = function(){
+    var styleObj = {};
+    var callback = function(node) {
+        styleObj[node.data] = node.totaloffsetylevel;
+    };
+    this.traverseBF(callback);
+
+    return styleObj;
+};
 Tree.prototype.traversePostOrder = function(){
         // foreach n in node.children
         //     post_order(n)

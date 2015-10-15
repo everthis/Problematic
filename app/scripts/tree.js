@@ -49,7 +49,6 @@ function calcChildrenLevels(node) {
     for (var i = 0; i < node.children.length; i++) {
         totalChildrenLevels += node.children[i].childrenlevel;
     };
-
     return totalChildrenLevels;
 }
 Tree.prototype.calcChildrenLevel = function() {
@@ -60,20 +59,36 @@ Tree.prototype.calcChildrenLevel = function() {
 
     this.traverseDF(callback);
 };
+
+function calcOffY(arr, data) {
+    var nodeIdx = findIndex(arr, data);
+    var totalY = 0;
+    for (var i = 0; i < nodeIdx; i++) {
+        totalY += arr[i].childrenlevel
+    };
+    return totalY;
+}
+
 Tree.prototype.calcTotalOffsetYLevel = function() {
-    var dataRootChildrenQueue = this.traverseDirectChild("_data_root");
-    var newIdx = dataRootChildrenQueue._newestIndex;
-    var oldIdx = dataRootChildrenQueue._oldestIndex;
-    var nodesArr = [];
+    // var dataRootChildrenQueue = this.traverseDirectChild("_data_root");
+    // var newIdx = dataRootChildrenQueue._newestIndex;
+    // var oldIdx = dataRootChildrenQueue._oldestIndex;
+    // var nodesArr = [];
 
-    for (var i = oldIdx; i < newIdx; i++) {
-        nodesArr.push(dataRootChildrenQueue._storage[i]);
+    // for (var i = oldIdx; i < newIdx; i++) {
+    //     nodesArr.push(dataRootChildrenQueue._storage[i]);
+    // };
+
+    var levelgap = 0;
+    var callback = function(node) {
+        if (node.parent) {
+            node.totaloffsetylevel = node.parent.totaloffsetylevel + calcOffY(node.parent.children, node.data);
+        } else if(node.parent === null) {
+
+        };
     };
 
-    var callback = function() {
-            
-    };
-
+    this.traverseBF(callback);
 
 };
 
@@ -117,6 +132,7 @@ Tree.prototype.add = function(data, toData, traversal) {
     }
 
     this.calcChildrenLevel();
+    this.calcTotalOffsetYLevel();
 };
 
 Tree.prototype.remove = function(data, fromData, traversal) {
@@ -146,6 +162,7 @@ Tree.prototype.remove = function(data, fromData, traversal) {
     }
 
     this.calcChildrenLevel();
+    this.calcTotalOffsetYLevel();
 
     return childToRemove;
 };
