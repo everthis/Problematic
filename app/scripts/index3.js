@@ -1,14 +1,22 @@
 'use strict';
+// var leafContentTpl = '<i class="remove-child" onclick="delNode(this)">-</i>' +
+//                      '<input type="text" class="leaf-key" placeholder="key" />' +
+//                      '<i class="gap-mark">---</i>' +
+//                      '<input type="text" class="leaf-value" placeholder="value" />' +
+//                      '<i class="add-child" onclick="addChild(this)">+</i>' +
+//                      '<i class="add-sibling" onclick="addSibling(this)">+</i>';
+
 var leafContentTpl = '<i class="remove-child" onclick="delNode(this)">-</i>' +
                      '<input type="text" class="leaf-key" placeholder="key" />' +
                      '<i class="gap-mark">---</i>' +
                      '<input type="text" class="leaf-value" placeholder="value" />' +
-                     '<i class="add-child" onclick="addChild(this)">+</i>' +
-                     '<i class="add-sibling" onclick="addSibling(this)">+</i>';
+                     '<i class="add-child" onclick="addChild(this)">+</i>';
 
-var $app = document.getElementById('app');
+
+var $apiTree = document.getElementsByClassName('api-tree')[0];
 var leafIndex = 1;
 var apiTree = initApiTree();
+calcDimensions();
 var initRectObj = {
       right: 0,
       bottom: 0,
@@ -18,14 +26,31 @@ var initRectObj = {
       height: 0
 };
 
-$app.appendChild(createLeaf("_data_root", 1, 0, initRectObj));
+$apiTree.appendChild(createLeaf("_data_root", 1, 0, initRectObj));
+
+function addDataRootChild() {
+    var addMark = document.createElement('span');
+    addMark.className = "add-dataroot-child";
+    addMark.textContent = "+";
+    addMark.addEventListener('click', function(ev) {
+      leafIndex += 1;
+      var parentIdx = "_data_root";
+      var nodeLevel = 1;
+      apiTree.add(leafIndex, parentIdx, apiTree.traverseBF);
+
+      $apiTree.appendChild(createLeaf(parentIdx, leafIndex, nodeLevel, initRectObj));
+      var obj = apiTree.applyStyle();
+      styleNodes(obj);
+
+
+    });
+    $apiTree.appendChild(addMark);
+}
 
 function initApiTree() {
     var apiTree = new Tree("_data_root");
-        // apiTree.add({status: 0}, "_root", apiTree.traverseBF);
-        // apiTree.add({statusInfo: "OK"}, "_root", apiTree.traverseBF);
-        // apiTree.add("_data_root", "_root", apiTree.traverseBF);
         apiTree.add(1, "_data_root", apiTree.traverseBF);
+    addDataRootChild();
 
     return apiTree;
 } 
@@ -39,17 +64,17 @@ function delNode(ctx) {
     var idxArr = nodesArrToIdxArr(nodesArr);
         apiTree.remove(currentIdx, parentIdx, apiTree.traverseBF);
         removeNodesFromDom(idxArr);
-        
+
     var obj = apiTree.applyStyle();
         styleNodes(obj);
-        // $app.removeChild(currentLeaf);
+        // $apiTree.removeChild(currentLeaf);
 }
 function removeNodesFromDom(arr) {
-    var allLeaves = Array.prototype.slice.call($app.getElementsByClassName('leaf'));
+    var allLeaves = Array.prototype.slice.call($apiTree.getElementsByClassName('leaf'));
     var allLeavesLen = allLeaves.length;
     for (var i = 0; i < allLeavesLen; i++) {
         if (arr.indexOf(+allLeaves[i].dataset.index) !== -1) {
-          $app.removeChild(allLeaves[i]);
+          $apiTree.removeChild(allLeaves[i]);
         }      
     };
 }
@@ -94,7 +119,7 @@ function addChild(ctx) {
     clonedRectObj.bottom = childrenIdxArrLen === 1 ? 
                            clonedRectObj.bottom + clonedRectObj.height * (childrenIdxArrLen - 2) :
                            clonedRectObj.bottom + clonedRectObj.height * (childrenIdxArrLen - 2) + (childrenIdxArrLen - 1) * 20;
-    $app.appendChild(createLeaf(parentIdex, leafIndex, nodeLevel, clonedRectObj));
+    $apiTree.appendChild(createLeaf(parentIdex, leafIndex, nodeLevel, clonedRectObj));
     var obj = apiTree.applyStyle();
     styleNodes(obj);
 
@@ -118,7 +143,7 @@ function createLeaf(parentIdx, nodeIdx, nodeLevel, rectObj) {
   return newLeaf;
 }
 function styleNodes(styleObj) {
-    var leaves = Array.prototype.slice.call($app.getElementsByClassName('leaf'));
+    var leaves = Array.prototype.slice.call($apiTree.getElementsByClassName('leaf'));
     var leafIdx, offsetY, originalX;
 
     for (var i = 0; i < leaves.length; i++) {
@@ -132,6 +157,7 @@ function styleNodes(styleObj) {
         }
         leaves[i].style["transform"] = 'translate3d(' + originalX + 'px, ' + offsetY + 'px, 0)';
     };
+        calcDimensions();
 }
 function addSibling(ctx) {
     leafIndex += 1;
@@ -143,9 +169,10 @@ function addSibling(ctx) {
     var clonedRectObj = cloneRectObj(rectObj);
     clonedRectObj.right = clonedRectObj.right - clonedRectObj.width;
     clonedRectObj.bottom += 30;
-    $app.appendChild(createLeaf(parentIdx, leafIndex, nodeLevel, clonedRectObj));
+    $apiTree.appendChild(createLeaf(parentIdx, leafIndex, nodeLevel, clonedRectObj));
     var obj = apiTree.applyStyle();
     styleNodes(obj);
+
 }
 
 /* utils */
@@ -161,6 +188,24 @@ function cloneRectObj(obj) {
 }
 function hasClass(elem, className) {
     return elem.className.split(' ').indexOf(className) > -1;
+}
+
+/* calculate dimensions */
+function calcDimensions() {
+  var dimensionArr = apiTree.maxLevels();
+  var horiMax, verticalMax, horiArr = [], vertArr = [];
+  for (var i = 0, x = dimensionArr.length; i < x; i++) {
+    horiArr.push(dimensionArr[i].length);
+    vertArr.push(Math.max.apply(null, dimensionArr[i]));
+  };
+  horiMax = Math.max.apply(null, horiArr);
+  verticalMax = vertArr.reduce(function(a, b) {
+    return a + b;
+  });
+  document.getElementsByClassName('api-tree')[0].style.width = horiMax * 520 + "px";
+  document.getElementsByClassName('api-tree')[0].style.height = verticalMax * 52 + "px";
+  return [horiMax, verticalMax];
+
 }
 
 
@@ -220,7 +265,7 @@ function getTranslateY(obj) {
 }
 
 function maxNodesInLevels() {
-    var allLeaves = Array.prototype.slice.call($app.getElementsByClassName('leaf'));
+    var allLeaves = Array.prototype.slice.call($apiTree.getElementsByClassName('leaf'));
     var levelNodesObj = {};
     var nodeLevelVal = '';
     for (var i = 0; i < allLeaves.length; i++) {
@@ -242,7 +287,7 @@ function maxNodesInLevel() {
     var allRootLeavesIdxArr = [];
     var levelNodes = {};
     var rowMaxLevel = {};
-    var allLeaves = Array.prototype.slice.call($app.getElementsByClassName('leaf'));
+    var allLeaves = Array.prototype.slice.call($apiTree.getElementsByClassName('leaf'));
     for (var i = 0; i < allLeaves.length; i++) {
       if (allLeaves[i].getAttribute('data-parent') === "_data_root") {
         allRootLeavesIdxArr.push(+allLeaves[i].getAttribute('data-index'));
@@ -260,9 +305,6 @@ function maxNodesInLevel() {
     return levelNodes;
 }
 
-function setOffset() {
-
-}
 function offsetLevel(currentRow, rowLevelArr) {
     var offsetY = 0;
     for (var i = 0; i < currentRow; i++) {
@@ -289,7 +331,7 @@ function rearrangeRows() {
     };
 
     // rearrange
-    var leaves = [].slice.call($app.getElementsByClassName('leaf'));
+    var leaves = [].slice.call($apiTree.getElementsByClassName('leaf'));
     var leafIdx = 0;
     var whichRow = 0;
     var originalX = 0;

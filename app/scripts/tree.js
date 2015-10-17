@@ -70,15 +70,6 @@ function calcOffY(arr, data) {
 }
 
 Tree.prototype.calcTotalOffsetYLevel = function() {
-    // var dataRootChildrenQueue = this.traverseDirectChild("_data_root");
-    // var newIdx = dataRootChildrenQueue._newestIndex;
-    // var oldIdx = dataRootChildrenQueue._oldestIndex;
-    // var nodesArr = [];
-
-    // for (var i = oldIdx; i < newIdx; i++) {
-    //     nodesArr.push(dataRootChildrenQueue._storage[i]);
-    // };
-
     var levelgap = 0;
     var callback = function(node) {
         if (node.parent) {

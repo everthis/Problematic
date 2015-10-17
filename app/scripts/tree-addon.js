@@ -27,11 +27,7 @@ Tree.prototype.applyStyle = function(){
 
     return styleObj;
 };
-Tree.prototype.traversePostOrder = function(){
-        // foreach n in node.children
-        //     post_order(n)
-        // print(node.text)
-};
+
 /**
  * [traverseDescendants description]
  * @param  {[integer]} nodeData [description]
@@ -63,6 +59,10 @@ Tree.prototype.traverseDescendants = function(nodeData) {
     }
 
     return descendantsArr;
+};
+
+Tree.prototype.dimensions = function(args){
+    
 };
 
 Tree.prototype.maxLevels = function() {
