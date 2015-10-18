@@ -233,7 +233,7 @@ function drawSingleSVG(idx, hori, parentVert, dvert) {
    dvert = dvert;
    parentVert = parentVert;
 
-   mx = hori * 501;
+   mx = hori * 499;
    my = parentVert * 52 + 12;
    qx = mx + 10;
    qy = my;
