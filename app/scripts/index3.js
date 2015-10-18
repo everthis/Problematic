@@ -233,7 +233,7 @@ function drawSingleSVG(idx, hori, parentVert, dvert) {
    dvert = dvert;
    parentVert = parentVert;
 
-   mx = hori * 501 - 30;
+   mx = hori * 501;
    my = parentVert * 52 + 12;
    qx = mx + 10;
    qy = my;
@@ -274,7 +274,8 @@ function calcDimensions() {
 
 function nodeLeftOffset(el) {
     var elRectObject = el.getBoundingClientRect();
-    var bodyRectObj = document.body.getBoundingClientRect();
+    // var bodyRectObj = document.body.getBoundingClientRect();
+    var bodyRectObj = document.getElementsByClassName('api-tree')[0].getBoundingClientRect();
     var cloneBodyRectObj = cloneRectObj(bodyRectObj);
     var cloneElRectObject = cloneRectObj(elRectObject);
     cloneElRectObject.top += Math.abs(cloneBodyRectObj.top);
