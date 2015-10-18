@@ -16,7 +16,8 @@ var leafContentTpl = '<i class="remove-child" onclick="delNode(this)">-</i>' +
 var $apiTree = document.getElementsByClassName('api-tree')[0];
 var leafIndex = 1;
 var apiTree = initApiTree();
-calcDimensions();
+var dimensionArr = calcDimensions();
+initSVG();
 var initRectObj = {
       right: 0,
       bottom: 0,
@@ -35,7 +36,7 @@ function addDataRootChild() {
     addMark.addEventListener('click', function(ev) {
       leafIndex += 1;
       var parentIdx = "_data_root";
-      var nodeLevel = 1;
+      var nodeLevel = 0;
       apiTree.add(leafIndex, parentIdx, apiTree.traverseBF);
 
       $apiTree.appendChild(createLeaf(parentIdx, leafIndex, nodeLevel, initRectObj));
@@ -45,6 +46,14 @@ function addDataRootChild() {
 
     });
     $apiTree.appendChild(addMark);
+}
+
+function initSVG() {
+   var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+   svg.setAttributeNS(null, "width", dimensionArr[0] * 520 + "px");
+   svg.setAttributeNS(null, "height", dimensionArr[1] * 52 + "px");
+   svg.setAttribute('class', 'api-svg');
+   document.getElementsByClassName('api-tree')[0].appendChild(svg);
 }
 
 function initApiTree() {
@@ -157,7 +166,8 @@ function styleNodes(styleObj) {
         }
         leaves[i].style["transform"] = 'translate3d(' + originalX + 'px, ' + offsetY + 'px, 0)';
     };
-        calcDimensions();
+        dimensionArr = calcDimensions();
+        drawSVG();
 }
 function addSibling(ctx) {
     leafIndex += 1;
@@ -190,18 +200,57 @@ function hasClass(elem, className) {
     return elem.className.split(' ').indexOf(className) > -1;
 }
 
+/* draw SVG */
+function clearSVG() {
+  var svg = document.getElementsByClassName("api-svg")[0];
+  while (svg.lastChild) {
+      svg.removeChild(svg.lastChild);
+  }
+}
+
+function drawSVG() {
+  clearSVG();
+  var callback = function(node) {
+    if (node.parent !== null) {
+      drawSingleSVG(node.data, node.column, node.parent.totaloffsetylevel, (node.totaloffsetylevel - node.parent.totaloffsetylevel));
+    };
+  };
+  apiTree.traverseDF(callback);
+}
+
+
+function drawSingleSVG(idx, hori, parentVert, dvert) {
+   var svg = document.getElementsByClassName("api-svg")[0];
+   svg.setAttributeNS(null, "width", dimensionArr[0] * 520 + "px");
+   svg.setAttributeNS(null, "height", dimensionArr[1] * 52 + "px");
+   var svgns = "http://www.w3.org/2000/svg";
+   var newPath = document.createElementNS(svgns, "path");
+   var controlRate = 0.2;
+   hori = hori - 1;
+   dvert = dvert;
+   parentVert = parentVert;
+  console.log(idx, hori, parentVert, dvert);
+   newPath.setAttributeNS(null, "d", "M " + hori * 453 + " " + (parentVert * 52 + 12) + " Q " + (hori * 453 + 10) + " " + (parentVert * 52 + 20) + ", " +
+                                     (hori * 453 + 20) + " " + (parentVert * 52 + (dvert / 2) * 52) + " T " + 
+                                     (hori * 453 + 40) + " " + (parentVert * 52 + dvert * 52) + "");
+   newPath.setAttribute('class', "api-svg-path");
+   newPath.setAttribute('data-idx', idx);
+   svg.appendChild(newPath);
+}
+
 /* calculate dimensions */
 function calcDimensions() {
   var dimensionArr = apiTree.maxLevels();
   var horiMax, verticalMax, horiArr = [], vertArr = [];
   for (var i = 0, x = dimensionArr.length; i < x; i++) {
     horiArr.push(dimensionArr[i].length);
-    vertArr.push(Math.max.apply(null, dimensionArr[i]));
+    // vertArr.push(Math.max.apply(null, dimensionArr[i]));
   };
   horiMax = Math.max.apply(null, horiArr);
-  verticalMax = vertArr.reduce(function(a, b) {
-    return a + b;
-  });
+  // verticalMax = vertArr.reduce(function(a, b) {
+  //   return a + b;
+  // });
+  verticalMax = apiTree._root.childrenlevel;
   document.getElementsByClassName('api-tree')[0].style.width = horiMax * 520 + "px";
   document.getElementsByClassName('api-tree')[0].style.height = verticalMax * 52 + "px";
   return [horiMax, verticalMax];

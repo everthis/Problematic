@@ -25,6 +25,17 @@ header {
     overflow-x: auto;
     overflow-y: hidden;
 }
+.api-tree {
+    position: relative;
+}
+.api-svg {
+    position: absolute;
+    .api-svg-path {
+        stroke: cyan;
+        stroke-width: 1;
+        fill: transparent;
+    }
+}
 i {
     cursor: pointer;
 }
@@ -38,7 +49,7 @@ i {
     display: inline-block;
     position: absolute;
     top: 0;
-    left: 1em;
+    left: -1em;
     width: 1em;
     text-align: center;
 }
