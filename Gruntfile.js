@@ -38,7 +38,7 @@ module.exports = function (grunt) {
       },
       babel: {
         files: ['<%= config.app %>/scripts/{,*/}*.js'],
-        tasks: ['babel:dist']
+        tasks: ['babel:dist', 'browserify:dist']
       },
       babelTest: {
         files: ['test/spec/{,*/}*.js'],
@@ -200,6 +200,17 @@ module.exports = function (grunt) {
           src: '{,*/}*.css',
           dest: '.tmp/styles/'
         }]
+      }
+    },
+
+    browserify: {
+      dist: {
+        files: {
+          '.tmp/scripts/all.js': ['.tmp/scripts/**/test2.js']
+        },
+        options: {
+          // transform: ['coffeeify']
+        }
       }
     },
 
