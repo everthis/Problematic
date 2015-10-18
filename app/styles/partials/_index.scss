@@ -27,9 +27,13 @@ header {
 }
 .api-tree {
     position: relative;
+    padding: 0 0 0 30px;
 }
 .api-svg {
     position: absolute;
+    &:not(:root) {
+        overflow: visible;
+    }
     .api-svg-path {
         stroke: cyan;
         stroke-width: 1;

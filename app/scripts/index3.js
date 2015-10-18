@@ -125,6 +125,8 @@ function addChild(ctx) {
 
     var childrenIdxArrLen = childrenIdxArr.length;
 
+    clonedRectObj.right -= 30;
+
     clonedRectObj.bottom = childrenIdxArrLen === 1 ? 
                            clonedRectObj.bottom + clonedRectObj.height * (childrenIdxArrLen - 2) :
                            clonedRectObj.bottom + clonedRectObj.height * (childrenIdxArrLen - 2) + (childrenIdxArrLen - 1) * 20;
@@ -226,13 +228,23 @@ function drawSingleSVG(idx, hori, parentVert, dvert) {
    var svgns = "http://www.w3.org/2000/svg";
    var newPath = document.createElementNS(svgns, "path");
    var controlRate = 0.2;
+   var mx, my, qx, qy, qxx, qyy, tx, ty;
    hori = hori - 1;
    dvert = dvert;
    parentVert = parentVert;
-  console.log(idx, hori, parentVert, dvert);
-   newPath.setAttributeNS(null, "d", "M " + hori * 453 + " " + (parentVert * 52 + 12) + " Q " + (hori * 453 + 10) + " " + (parentVert * 52 + 20) + ", " +
-                                     (hori * 453 + 20) + " " + (parentVert * 52 + (dvert / 2) * 52) + " T " + 
-                                     (hori * 453 + 40) + " " + (parentVert * 52 + dvert * 52) + "");
+
+   mx = hori * 501 - 30;
+   my = parentVert * 52 + 12;
+   qx = mx + 10;
+   qy = my;
+   qxx = mx + 15;
+   qyy = (my + (dvert / 2) * 52);
+   tx = mx + 30;
+   ty = my + dvert * 52;
+
+   newPath.setAttributeNS(null, "d", "M " + mx + " " + my + " Q " + qx + " " + qy + ", " +
+                                     qxx + " " + qyy + " T " + 
+                                     tx + " " + ty + "");
    newPath.setAttribute('class', "api-svg-path");
    newPath.setAttribute('data-idx', idx);
    svg.appendChild(newPath);
