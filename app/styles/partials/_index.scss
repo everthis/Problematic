@@ -20,14 +20,14 @@ header {
 
 }
 .per-api {
-    padding: 0 0 0 2em;
+    padding: 0 0 0 0;
     position: relative;
     overflow-x: auto;
     overflow-y: hidden;
 }
 .api-tree {
     position: relative;
-    padding: 0 0 0 30px;
+    padding: 0 0 0 62px;
 }
 .api-svg {
     position: absolute;
@@ -54,7 +54,7 @@ i {
     display: inline-block;
     position: absolute;
     top: 0;
-    left: -1em;
+    left: 0em;
     width: 1em;
     text-align: center;
 }
@@ -64,6 +64,7 @@ i {
     padding: 0 .5em;
     position: absolute;
     margin: 0 0 1.3em 0;
+    white-space: nowrap;
     .remove-child {
         padding: 0 .5em;
     }
