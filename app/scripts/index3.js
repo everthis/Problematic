@@ -10,6 +10,8 @@ var leafContentTpl = '<i class="remove-child" onclick="delNode(this)">-</i>' +
                      '<input type="text" class="leaf-key" placeholder="key" />' +
                      '<i class="gap-mark">---</i>' +
                      '<input type="text" class="leaf-value" placeholder="value" />' +
+                     '<i class="gap-mark">---</i>' +
+                     '<input type="text" class="leaf-value" placeholder="quantity" />' +
                      '<i class="add-child" onclick="addChild(this)">+</i>';
 
 
@@ -234,7 +236,7 @@ function drawSingleSVG(idx, hori, parentVert, dvert) {
    parentVert = parentVert;
 
    mx = hori * 499;
-   my = parentVert * 52 + 12;
+   my = parentVert * 52 + 8;
    qx = mx + 10;
    qy = my;
    qxx = mx + 15;
