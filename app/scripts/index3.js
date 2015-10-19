@@ -1,10 +1,4 @@
 'use strict';
-// var leafContentTpl = '<i class="remove-child" onclick="delNode(this)">-</i>' +
-//                      '<input type="text" class="leaf-key" placeholder="key" />' +
-//                      '<i class="gap-mark">---</i>' +
-//                      '<input type="text" class="leaf-value" placeholder="value" />' +
-//                      '<i class="add-child" onclick="addChild(this)">+</i>' +
-//                      '<i class="add-sibling" onclick="addSibling(this)">+</i>';
 
 var leafContentTpl = '<i class="remove-child" onclick="delNode(this)">-</i>' +
                      '<input type="text" class="leaf-key" placeholder="key" />' +
@@ -44,8 +38,6 @@ function addDataRootChild() {
       $apiTree.appendChild(createLeaf(parentIdx, leafIndex, nodeLevel, initRectObj));
       var obj = apiTree.applyStyle();
       styleNodes(obj);
-
-
     });
     $apiTree.appendChild(addMark);
 }
@@ -98,15 +90,7 @@ function nodesArrToIdxArr(nodesArr) {
     return idxArr;
 }
 
-function queueNodesToArr(queue) {
-  var childrenIdxArr = [];
-  for(var perNode in queue._storage){
-    if ( (typeof parseInt(perNode) === "number") && queue._storage[perNode].hasOwnProperty('data')) {
-        childrenIdxArr.push(queue._storage[perNode].data);
-    };
-  }
-  return childrenIdxArr;
-}
+
 function addChild(ctx) {
     leafIndex += 1;
     var parentIdex = +ctx.parentNode.dataset.index;
@@ -136,8 +120,6 @@ function addChild(ctx) {
     var obj = apiTree.applyStyle();
     styleNodes(obj);
 
-    // var maxIdx = Math.max(...childrenIdxArr);
-    // console.log(maxIdx);
 }
 
 function generateLeafSpan(parentId, nodeIndex, nodeLevel, rectObj) {
@@ -200,11 +182,9 @@ function cloneRectObj(obj) {
     height: obj.height
   }
 }
-function hasClass(elem, className) {
-    return elem.className.split(' ').indexOf(className) > -1;
-}
 
-/* draw SVG */
+
+/* manipulate SVG */
 function clearSVG() {
   var svg = document.getElementsByClassName("api-svg")[0];
   while (svg.lastChild) {
@@ -235,7 +215,7 @@ function drawSingleSVG(idx, hori, parentVert, dvert) {
    dvert = dvert;
    parentVert = parentVert;
 
-   mx = hori * 499;
+   mx = hori * 501;
    my = parentVert * 52 + 8;
    qx = mx + 10;
    qy = my;
@@ -287,145 +267,6 @@ function nodeLeftOffset(el) {
     return cloneElRectObject;
 }
 
-function getTransform(el) {
-    var transform = window.getComputedStyle(el, null).getPropertyValue('-webkit-transform');
-    var results = transform.match(/matrix(?:(3d)\(-{0,1}\d+(?:, -{0,1}\d+)*(?:, (-{0,1}\d+))(?:, (-{0,1}\d+))(?:, (-{0,1}\d+)), -{0,1}\d+\)|\(-{0,1}\d+(?:, -{0,1}\d+)*(?:, (-{0,1}\d+))(?:, (-{0,1}\d+))\))/);
 
-    if(!results) return [0, 0, 0];
-    if(results[1] == '3d') return results.slice(2,5);
 
-    results.push(0);
-    return results.slice(5, 8); // returns the [X,Y,Z,1] values
-}
 
-function getTranslateX(el) {
-        // chrome won't use prefix
-        // var style_attr = browserPrefix() + 'transform';
-        var style_attr = 'transform';
-        var transform = window.getComputedStyle(el, null).getPropertyValue(style_attr);
-        var results = transform.match(/matrix(?:(3d)\(-{0,1}\d+(?:, -{0,1}\d+)*(?:, (-{0,1}\d+))(?:, (-{0,1}\d+))(?:, (-{0,1}\d+)), -{0,1}\d+\)|\(-{0,1}\d+(?:, -{0,1}\d+)*(?:, (-{0,1}\d+))(?:, (-{0,1}\d+))\))/);
-        if(!results) return [0, 0, 0];
-        if(results[1] === '3d') return results.slice(2,5);
-        results.push(0);
-        return +(results.slice(5, 8)[0]); // returns the [X,Y,Z,1] values
-}
-
-function browserPrefix() {
-    var ua = navigator.userAgent.toLowerCase(), prefix = "";
-        prefix = (ua.indexOf("chrome") >= 0 || window.openDatabase) ? "-webkit-" : (ua.indexOf("firefox") >= 0) ? "-moz-" : window.opera ? "-o-" : (document.all && navigator.userAgent.indexOf("Opera") === -1) ? "-ms-" : "";
-        console.log(prefix);
-        return prefix;
-
-}
-
-function getTranslateY(obj) {
-    if(!window.getComputedStyle) return;
-    var style = getComputedStyle(obj),
-        transform = style.transform || style.webkitTransform || style.mozTransform;
-    var mat = transform.match(/^matrix3d\((.+)\)$/);
-    if(mat) return parseFloat(mat[1].split(', ')[13]);
-    mat = transform.match(/^matrix\((.+)\)$/);
-    return mat ? parseFloat(mat[1].split(', ')[5]) : 0;
-}
-
-function maxNodesInLevels() {
-    var allLeaves = Array.prototype.slice.call($apiTree.getElementsByClassName('leaf'));
-    var levelNodesObj = {};
-    var nodeLevelVal = '';
-    for (var i = 0; i < allLeaves.length; i++) {
-       nodeLevelVal = allLeaves[i].dataset.level;
-       levelNodesObj[nodeLevelVal] = levelNodesObj.hasOwnProperty(nodeLevelVal) ? levelNodesObj[nodeLevelVal] + 1 : 1;
-    };
-    var levelArr = [];
-    for(var ln in levelNodesObj){
-      if (levelNodesObj.hasOwnProperty(ln)) {
-        levelArr.push(levelNodesObj[ln]);
-      };
-    }
-
-    return Math.max(...levelArr);
-}
-
-function maxNodesInLevel() {
-    var levelMaxObj = {};
-    var allRootLeavesIdxArr = [];
-    var levelNodes = {};
-    var rowMaxLevel = {};
-    var allLeaves = Array.prototype.slice.call($apiTree.getElementsByClassName('leaf'));
-    for (var i = 0; i < allLeaves.length; i++) {
-      if (allLeaves[i].getAttribute('data-parent') === "_data_root") {
-        allRootLeavesIdxArr.push(+allLeaves[i].getAttribute('data-index'));
-      };      
-    };
-    for (var j = 0; j < allRootLeavesIdxArr.length; j++) {
-        levelNodes[allRootLeavesIdxArr[j]] = apiTree.traverseDescendants(allRootLeavesIdxArr[j]);      
-    };
-    for(var lv in levelNodes){
-        if (levelNodes.hasOwnProperty(lv)) {
-          levelNodes[lv] = nodesArrToIdxArr(levelNodes[lv]);
-        };
-    }
-
-    return levelNodes;
-}
-
-function offsetLevel(currentRow, rowLevelArr) {
-    var offsetY = 0;
-    for (var i = 0; i < currentRow; i++) {
-      offsetY += rowLevelArr[i] * 52;
-    };
-
-    return offsetY;
-}
-function rearrangeRows() {
-    // max level per row
-    var rowMaxLevelArr = apiTree.maxLevels();
-    for (var i = 0; i < rowMaxLevelArr.length; i++) {
-      rowMaxLevelArr[i] = getMaxOfArray(rowMaxLevelArr[i]);
-    };
-
-    // nodes per row
-    var dataRootNodes = apiTree.traverseDirectChild("_data_root");
-    var dataRootArr = queueNodesToArr(dataRootNodes);
-    var rowNodesArr = [];
-    for (var i = 0; i < dataRootArr.length; i++) {
-      var nodesArr = apiTree.traverseDescendants(dataRootArr[i]);
-      var idxArr = nodesArrToIdxArr(nodesArr);
-        rowNodesArr.push(idxArr);
-    };
-
-    // rearrange
-    var leaves = [].slice.call($apiTree.getElementsByClassName('leaf'));
-    var leafIdx = 0;
-    var whichRow = 0;
-    var originalX = 0;
-    var originalY = 0;
-    var levelOffSet = 0;
-    for (var i = 0; i < leaves.length; i++) {
-        leafIdx = +(leaves[i].dataset.index);
-        whichRow = 0;
-        for (var j = 0; j < rowNodesArr.length; j++) {
-          if (rowNodesArr[j].indexOf(leafIdx) !== -1 ) {
-            break;
-          } else {
-            whichRow += 1;
-          };
-        };
-
-        originalX = getTranslateX(leaves[i]);
-        originalY = getTranslateY(leaves[i]);
-
-        levelOffSet = offsetLevel(whichRow, rowMaxLevelArr);
-
-        leaves[i].style["transform"] = 'translate3d(' + originalX + 'px, ' + levelOffSet + 'px, 0)';
-
-    };
-
-    return rowNodesArr;
-
-}
-
-function rearrangeNodes() {
-    
-
-}

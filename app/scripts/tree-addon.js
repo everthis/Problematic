@@ -61,10 +61,6 @@ Tree.prototype.traverseDescendants = function(nodeData) {
     return descendantsArr;
 };
 
-Tree.prototype.dimensions = function(args){
-    
-};
-
 Tree.prototype.maxLevels = function() {
     var that = this;
     var dataRootNodes = this.traverseDirectChild('_data_root');
