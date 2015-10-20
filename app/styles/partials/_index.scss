@@ -11,6 +11,9 @@ header {
     position: relative;
     overflow-x: auto;
     overflow-y: hidden;
+    margin: 0 0 2em 0;
+    border-bottom: 1px solid #ddd;
+    box-shadow: 0 5px 4px -5px purple;
 }
 .api-tree {
     position: relative;

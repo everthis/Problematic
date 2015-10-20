@@ -39,11 +39,15 @@ module.exports = function (grunt) {
       },
       babel: {
         files: ['<%= config.app %>/scripts/{,*/}*.js'],
-        tasks: ['babel:dist', 'browserify:dist']
+        tasks: ['babel:dist']
       },
       babelTest: {
         files: ['test/spec/{,*/}*.js'],
         tasks: ['babel:test', 'test:watch']
+      },
+      module: {
+        files: ['.tmp/scripts/*.js'],
+        tasks: ['browserify:dist']
       },
       gruntfile: {
         files: ['Gruntfile.js']
@@ -207,7 +211,7 @@ module.exports = function (grunt) {
     browserify: {
       dist: {
         files: {
-          '.tmp/scripts/all.js': ['.tmp/scripts/**/test2.js']
+          '.tmp/scripts/browserify/app-index.js': ['.tmp/scripts/app-index.js']
         },
         options: {
           banner: '<%= config.banner %>'

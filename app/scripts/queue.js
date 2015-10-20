@@ -3,7 +3,7 @@
  * enqueue(data) adds data to a queue. 
  * dequeue removes the oldest added data to a queue. 
  */
-function Queue() {
+export function Queue() {
     this._oldestIndex = 1;
     this._newestIndex = 1;
     this._storage = {};

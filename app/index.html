@@ -41,21 +41,9 @@
     <!-- build:js scripts/index.js -->
     <script src="scripts/polyfill.js"></script>
     <script src="scripts/utilities.js"></script>
-    <script src="scripts/queue.js"></script>
-    <script src="scripts/tree.js"></script>
-    <script src="scripts/tree-addon.js"></script>
-    <script src="scripts/tree-dom.js"></script>
+    <script src="scripts/browserify/app-index.js"></script>
     <script src="scripts/debug.js"></script>
     <!-- endbuild -->
-
-    <script>
-        var addApiBtn = document.getElementsByClassName('add-api-btn')[0];
-        var apisArr = [];
-        addApiBtn.addEventListener('click', function() {
-            var newApi = new apiDom();
-            apisArr.push(newApi);
-        })
-    </script>
 
   </body>
 </html>

@@ -1,4 +1,5 @@
 'use strict';
+import {Tree} from './tree';
 var perApiTpl = '<div class="api-info"></div>' +
                 '<div class="api-tree"></div>';
 
@@ -19,7 +20,7 @@ var initRectObj = {
       height: 0
 };
 
-function apiDom() {
+export function apiDom() {
     this.$apis = document.getElementsByClassName('apis')[0];
     var preApisLen = this.$apis.getElementsByClassName('per-api').length;
     var newDocFrag = document.createDocumentFragment();
