@@ -21,7 +21,8 @@ module.exports = function (grunt) {
   // Configurable paths
   var config = {
     app: 'app',
-    dist: 'dist'
+    dist: 'dist',
+    banner: '/* everthis */'
   };
 
   // Define the configuration for all the tasks
@@ -209,6 +210,7 @@ module.exports = function (grunt) {
           '.tmp/scripts/all.js': ['.tmp/scripts/**/test2.js']
         },
         options: {
+          banner: '<%= config.banner %>'
           // transform: ['coffeeify']
         }
       }

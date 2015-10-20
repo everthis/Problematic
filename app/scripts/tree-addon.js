@@ -7,7 +7,7 @@ Tree.prototype.traverseDirectChild = function(nodedata) {
         }
     };
 
-    this.contains(callback, apiTree.traverseBF);
+    this.contains(callback, this.traverseBF);
 
     while(parent){
         for (var i = 0, length = parent.children.length; i < length; i++) {
@@ -42,7 +42,7 @@ Tree.prototype.traverseDescendants = function(nodeData) {
             }
         };
 
-    this.contains(callback, apiTree.traverseBF);
+    this.contains(callback, this.traverseBF);
 
     queue.enqueue(parent);
 

@@ -43,6 +43,13 @@ i {
     @extend %mark;
     background-color: green;
 }
+.del-dataroot-child {
+    @extend %mark;
+    position: absolute;
+    top: 36px;
+    left: .8em;
+    background-color: red;
+}
 
 .leaf {
     display: inline-block;
