@@ -1,6 +1,11 @@
 'use strict';
 import {Tree} from './tree';
-var perApiTpl = '<div class="api-info"></div>' +
+var perApiTpl = '<div class="api-info">' +
+                    '<label class="api-label">API:</label>' +
+                    '<input class="api-uri" placeholder="/foo/bar" disabled="true" /> ' +
+                    '<span class="api-edit">edit</span>' +
+                    '<span class="api-save">save</span>' +
+                '</div>' +
                 '<div class="api-tree"></div>';
 
 var leafContentTpl = '<i class="remove-child">-</i>' +
@@ -31,6 +36,8 @@ export function apiDom() {
     newDocFrag.appendChild(perApiEle);
     this.$apis.appendChild(newDocFrag);
 
+    this.bindEventsToMRCAPI();
+
     this.leafIndex = 1;
     
     var recentApi = this.$apis.getElementsByClassName('per-api')[preApisLen];
@@ -45,6 +52,24 @@ export function apiDom() {
 
     this.bindEventsToMRCE();
 }
+
+apiDom.prototype.bindEventsToMRCAPI = function(){
+    var that = this;
+    var newlyCreatedApiNode = this.$apis.lastChild;
+
+    var $apiEdit = newlyCreatedApiNode.getElementsByClassName("api-edit")[0];
+    var $apiSave = newlyCreatedApiNode.getElementsByClassName("api-save")[0];
+    var $apiUri = newlyCreatedApiNode.getElementsByClassName("api-uri")[0];
+
+    $apiEdit.addEventListener('click', function(ev) {
+        $apiUri.disabled = false;
+    });
+
+    $apiSave.addEventListener('click', function(ev) {
+        $apiUri.disabled = true;
+    });
+
+};
 
 apiDom.prototype.operateDataRootChild = function () {
     var that = this;

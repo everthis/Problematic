@@ -22,7 +22,7 @@ module.exports = function (grunt) {
   var config = {
     app: 'app',
     dist: 'dist',
-    banner: '/* everthis */'
+    banner: '/* author: everthis --- wwwaap@gmail.com */'
   };
 
   // Define the configuration for all the tasks

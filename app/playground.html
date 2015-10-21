@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title></title>
+	<!-- build:css(.) styles/vendor.css -->
+	<!-- bower:css -->
+	<link rel="stylesheet" href="/bower_components/normalize.css/normalize.css" />
+	<!-- endbower -->
+	<!-- endbuild -->
+
+	<!-- build:css(.tmp) styles/index.css -->
+	<link rel="stylesheet" href="styles/index.css">
+	<!-- endbuild -->
+
+	<style>
+    body {
+    	margin: 0;
+    }
+    canvas {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        height: 100vh;
+    }
+    </style>
+</head>
+<body>
+	<canvas id=c></canvas>
+	<script type="text/javascript">
+	var canvas = document.getElementById('c');
+	var ctx = canvas.getContext('2d');
+	var w = window.innerWidth,
+	    h = window.innerHeight;
+	canvas.width = w;
+	canvas.height = h;
+	var c = {
+	    x: w / 2,
+	    y: h / 2
+	};
+
+	function Point(vx, vy) {
+	    this.font = (Math.random() * 20) | 0 + 'px Verdana';
+	    this.color = colors[(Math.random() * colors.length) | 0];
+	    this.text = ((Math.random() * 10) | 0).toString(10);
+	    this.position = {
+	        x: c.x,
+	        y: c.y
+	    };
+	    this.velocity = {
+	        x: vx,
+	        y: vy
+	    };
+	    this.frame = 1;
+	}
+	Point.prototype.update = function() {
+	    this.frame += 0.0001;
+	    this.velocity.x *= this.frame;
+	    this.velocity.y *= this.frame;
+	    this.position.x += this.velocity.x;
+	    this.position.y += this.velocity.y;
+
+	    ctx.fillStyle = this.color;
+	    ctx.font = this.font;
+	    ctx.fillText(this.text, this.position.x, this.position.y);
+	}
+	var points = [];
+	var total = w / 2;
+
+	var bgColor = 'rgba(255, 255, 255, .15)';
+	var colors = ['#ff0000', '#ff7f00', '#ffff00', '#00ff00', '#0000ff', '#4b0082', '#8b00ff'];
+
+	function anim() {
+	    window.requestAnimationFrame(anim);
+	    for (var i = 0; i < points.length; ++i) {
+	        points[i].update();
+	        if (points[i].position.y < 0 || points[i].position.y > h || points[i].position.x < 0 || points[i].position.x > w) {
+	            points.splice(i, 1);
+	        }
+	    }
+	    if (points.length < total) points.push(new Point(Math.random() - 0.5, Math.random() - 0.5))
+	    ctx.fillStyle = bgColor;
+	    ctx.fillRect(0, 0, w, h);
+	}
+	anim();
+	window.addEventListener('resize', function() {
+
+	    w = canvas.width = window.innerWidth;
+	    h = canvas.height = window.innerHeight;
+	    c.x = w / 2;
+	    c.y = h / 2;
+	    ctx.fillStyle = bgColor;
+	    ctx.fillRect(0, 0, w, h);
+	})
+	</script>
+	
+	
+
+	<!-- build:js(.) scripts/vendor.js -->
+	<!-- bower:js -->
+	<!-- endbower -->
+	<!-- endbuild -->
+
+
+	<!-- build:js scripts/index-pg.js -->
+
+	<!-- endbuild -->
+</body>
+</html>
