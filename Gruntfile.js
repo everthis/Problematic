@@ -46,7 +46,7 @@ module.exports = function (grunt) {
         tasks: ['babel:test', 'test:watch']
       },
       module: {
-        files: ['.tmp/scripts/*.js'],
+        files: ['.tmp/scripts/{,*/}*.js'],
         tasks: ['browserify:dist']
       },
       gruntfile: {
@@ -76,7 +76,7 @@ module.exports = function (grunt) {
             '<%= config.app %>/{,*/}*.html',
             '.tmp/styles/{,*/}*.css',
             '<%= config.app %>/images/{,*/}*',
-            '.tmp/scripts/{,*/}*.js'
+            '.tmp/compiled_scripts/{,*/}*.js'
           ],
           port: 9000,
           server: {
@@ -211,7 +211,7 @@ module.exports = function (grunt) {
     browserify: {
       dist: {
         files: {
-          '.tmp/scripts/browserify/app-index.js': ['.tmp/scripts/app-index.js']
+          '.tmp/compiled_scripts/app-index.js': ['.tmp/scripts/app-index.js']
         },
         options: {
           banner: '<%= config.banner %>'
@@ -387,6 +387,7 @@ module.exports = function (grunt) {
       'clean:server',
       'wiredep',
       'concurrent:server',
+      'browserify:dist',
       'postcss',
       'browserSync:livereload',
       'watch'

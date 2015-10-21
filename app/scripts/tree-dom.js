@@ -69,7 +69,6 @@ apiDom.prototype.operateDataRootChild = function () {
     delMark.textContent = "-";
     delMark.addEventListener('click', function(ev) {
       /* this API is deleted. */
-      console.log(ev.currentTarget.closest('.per-api'));
       that.$apis.removeChild(ev.currentTarget.closest('.per-api'));
     });
     this.$apiTree.insertBefore(delMark, this.$apiTree.firstChild);
