@@ -1,6 +1,14 @@
 # app.rb
 require 'sinatra'
 
+get '/' do
+	"hello"
+end
+
+get '/index' do
+	"hello"
+end
+
 get '/*' do
   # t = %w[text/css text/html application/javascript]
   # request.accept              # ['text/html', '*/*']
@@ -20,7 +28,7 @@ get '/*' do
   # request.form_data?          # false
   # request["some_param"]       # value of some_param parameter. [] is a shortcut to the params hash.
   # request.referrer            # the referrer of the client or '/'
-  # request.user_agent          # user agent (used by :agent condition)
+  request.user_agent          # user agent (used by :agent condition)
   # request.cookies             # hash of browser cookies
   # request.xhr?                # is this an ajax request?
   # request.url                 # "http://example.com/example/foo"
