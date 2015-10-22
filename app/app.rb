@@ -1,8 +1,16 @@
 # app.rb
 require 'sinatra'
 
-get '/' do
-	"hello"
+class Stream
+  def each
+    100.times { |i| yield "#{i}\n" }
+  end
+end
+
+# get('/home') { Stream.new }
+
+get '/test/:name' do
+	erb :test, :locals => {:name => params[:name]}
 end
 
 get '/index' do

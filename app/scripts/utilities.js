@@ -1,18 +1,18 @@
-function getMaxOfArray(numArray) {
+export function getMaxOfArray(numArray) {
   return Math.max.apply(null, numArray);
 }
 
-function hasClass(elem, className) {
+export function hasClass(elem, className) {
     return elem.className.split(' ').indexOf(className) > -1;
 }
 
-function browserPrefix() {
+export function browserPrefix() {
     var ua = navigator.userAgent.toLowerCase(), prefix = "";
         prefix = (ua.indexOf("chrome") >= 0 || window.openDatabase) ? "-webkit-" : (ua.indexOf("firefox") >= 0) ? "-moz-" : window.opera ? "-o-" : (document.all && navigator.userAgent.indexOf("Opera") === -1) ? "-ms-" : "";
     return prefix;
 }
 
-function getTransform(el) {
+export function getTransform(el) {
     var transform = window.getComputedStyle(el, null).getPropertyValue('-webkit-transform');
     var results = transform.match(/matrix(?:(3d)\(-{0,1}\d+(?:, -{0,1}\d+)*(?:, (-{0,1}\d+))(?:, (-{0,1}\d+))(?:, (-{0,1}\d+)), -{0,1}\d+\)|\(-{0,1}\d+(?:, -{0,1}\d+)*(?:, (-{0,1}\d+))(?:, (-{0,1}\d+))\))/);
 
@@ -23,7 +23,7 @@ function getTransform(el) {
     return results.slice(5, 8); // returns the [X,Y,Z,1] values
 }
 
-function getTranslateX(el) {
+export function getTranslateX(el) {
     // chrome won't use prefix
     // var style_attr = browserPrefix() + 'transform';
     var style_attr = 'transform';
@@ -35,7 +35,7 @@ function getTranslateX(el) {
     return +(results.slice(5, 8)[0]); // returns the [X,Y,Z,1] values
 }
 
-function getTranslateY(obj) {
+export function getTranslateY(obj) {
     if(!window.getComputedStyle) return;
     var style = getComputedStyle(obj),
         transform = style.transform || style.webkitTransform || style.mozTransform;

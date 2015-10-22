@@ -1,5 +1,6 @@
 'use strict';
 import {Tree} from './tree';
+import {getTranslateX} from './utilities';
 var perApiTpl = '<div class="api-info">' +
                     '<label class="api-label">API:</label>' +
                     '<input class="api-uri" placeholder="/foo/bar" disabled="true" /> ' +
