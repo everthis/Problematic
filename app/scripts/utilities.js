@@ -44,3 +44,40 @@ export function getTranslateY(obj) {
     mat = transform.match(/^matrix\((.+)\)$/);
     return mat ? parseFloat(mat[1].split(', ')[5]) : 0;
 }
+
+/**
+ * [stringify with 4 spaces at each level]
+ * @param  {[object]} jsObj [description]
+ * @return {[string]}       [description]
+ * JSON.stringify(jsObj, null, "\t"); // stringify with tabs inserted at each level
+ */
+export function beautifyJSON(jsObj) {
+    return JSON.stringify(jsObj, null, 4); 
+}
+
+/**
+ * [hightlightJSON description]
+ * @param  {JSON string OR JSON object} json [description]
+ * @return {string}      [description]
+ */
+export function hightlightJSON(json) {
+    if (typeof json != 'string') {
+         json = JSON.stringify(json, undefined, 2);
+    }
+    json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+        var cls = 'number';
+        if (/^"/.test(match)) {
+            if (/:$/.test(match)) {
+                cls = 'key';
+            } else {
+                cls = 'string';
+            }
+        } else if (/true|false/.test(match)) {
+            cls = 'boolean';
+        } else if (/null/.test(match)) {
+            cls = 'null';
+        }
+        return '<span class="' + cls + '">' + match + '</span>';
+    });
+}

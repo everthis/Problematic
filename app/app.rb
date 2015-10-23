@@ -8,6 +8,7 @@ class Stream
 end
 
 # get('/home') { Stream.new }
+# http://yi.baidu.com/pc/doctor/listdata?pageSize=12&departLevel1Id=1&provId=1&cityId=1&regionId=all&page=1
 
 get '/test/:name' do
 	erb :test, :locals => {:name => params[:name]}
