@@ -45,6 +45,44 @@ export function getTranslateY(obj) {
     return mat ? parseFloat(mat[1].split(', ')[5]) : 0;
 }
 
+function serialize(obj, prefix) {
+  var str = [];
+  for(var p in obj) {
+    if (obj.hasOwnProperty(p)) {
+      var k = prefix ? prefix + "[" + p + "]" : p, v = obj[p];
+      str.push(typeof v === "object" ?
+        serialize(v, k) :
+        encodeURIComponent(k) + "=" + encodeURIComponent(v));
+    }
+  }
+  return str.join("&");
+}
+
+export function xhr(method, url, callback, paramsObj = {}, isAsync = true) {
+    var xmlhttp;
+
+    xmlhttp = new XMLHttpRequest();
+
+    xmlhttp.onreadystatechange = function() {
+        if (xmlhttp.readyState == XMLHttpRequest.DONE ) {
+           if(xmlhttp.status == 200){
+               callback(xmlhttp.responseText);
+           }
+           else if(xmlhttp.status == 400) {
+              throw new Error('There was an error 400')
+           }
+           else {
+              throw new Error('something else other than 200 was returned')
+           }
+        }
+    };
+
+    var combUrl = url + serialize(paramsObj);
+
+    xmlhttp.open(method, combUrl, isAsync);
+    xmlhttp.send(null);
+}
+
 /**
  * [stringify with 4 spaces at each level]
  * @param  {[object]} jsObj [description]
@@ -56,14 +94,12 @@ export function beautifyJSON(jsObj) {
 }
 
 /**
- * [hightlightJSON description]
- * @param  {JSON string OR JSON object} json [description]
+ * [hightlightJSON works on JSON object, not string]
+ * @param  {JSON object} json [description]
  * @return {string}      [description]
  */
 export function hightlightJSON(json) {
-    if (typeof json != 'string') {
-         json = JSON.stringify(json, undefined, 2);
-    }
+    json = JSON.stringify(json, undefined, 4);
     json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
         var cls = 'number';

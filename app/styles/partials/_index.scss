@@ -34,6 +34,9 @@ header {
 .api-save {
     @extend .api-edit;
 }
+.api-test {
+    @extend .api-edit;
+}
 .api-tree {
     position: relative;
     padding: .3em 0 0 62px;
@@ -115,4 +118,17 @@ i {
         left: 50%;
         transform: translate(-50%, -50%);
     }
+}
+
+.data-raw {
+    @extend .api-edit;
+}
+.data-beautify {
+    @extend .api-edit;
+}
+.data-highlight {
+    @extend .api-edit;
+}
+.data-preview {
+    @extend .api-edit;
 }

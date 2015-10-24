@@ -1,13 +1,31 @@
 'use strict';
 import {Tree} from './tree';
-import {getTranslateX} from './utilities';
+import {getTranslateX, xhr, beautifyJSON, hightlightJSON} from './utilities';
 var perApiTpl = '<div class="api-info">' +
                     '<label class="api-label">API:</label>' +
-                    '<input class="api-uri" placeholder="/foo/bar" disabled="true" /> ' +
+                    '<input class="api-uri" placeholder="" value="http://127.0.0.1:4567/foo" disabled="true" /> ' +
+                    '<label class="api-label">method:</label>' +
+                    '<select class="api-method">' +
+                        '<option value="GET" selected>GET</option>' + 
+                        '<option value="POST">POST</option>' +
+                        '<option value="PUT">PUT</option>' +
+                        '<option value="DELETE">DELETE</option>' +
+                    '</select>' +
                     '<span class="api-edit">edit</span>' +
                     '<span class="api-save">save</span>' +
+                    '<span class="api-test">test</span>' +
                 '</div>' +
-                '<div class="api-tree"></div>';
+                '<div class="api-tree"></div>' +
+                '<div class="api-data">' +
+                    '<div class="data-views-control">' +
+                        '<span class="data-raw">raw</span>' +
+                        '<span class="data-beautify">beautify</span>' +
+                        '<span class="data-highlight">syntaxHighlight</span>' +
+                        '<span class="data-preview">preview</span>' +
+                    '</div>' +
+                    '<div class="data-view json">' +
+                    '</div>' +
+                '</div>';
 
 var leafContentTpl = '<i class="remove-child">-</i>' +
                      '<input type="text" class="leaf-key" placeholder="key" />' +
@@ -52,8 +70,21 @@ export function apiDom() {
     this.initSVG();
 
     this.bindEventsToMRCE();
+
+    this.apiReturnData = '';
 }
 
+apiDom.prototype.storeApiReturnData = function(data) {
+    this.apiReturnData = data;
+    this.$dataBeautify.click();
+}
+apiDom.prototype.jsonView = function(data){
+    var $pre = document.createElement('pre');
+    $pre.innerHTML = data;
+    this.$dataView.innerHTML = '';
+    this.$dataView.appendChild($pre);
+
+};
 apiDom.prototype.bindEventsToMRCAPI = function(){
     var that = this;
     var newlyCreatedApiNode = this.$apis.lastChild;
@@ -61,6 +92,15 @@ apiDom.prototype.bindEventsToMRCAPI = function(){
     var $apiEdit = newlyCreatedApiNode.getElementsByClassName("api-edit")[0];
     var $apiSave = newlyCreatedApiNode.getElementsByClassName("api-save")[0];
     var $apiUri = newlyCreatedApiNode.getElementsByClassName("api-uri")[0];
+    var $apiTest = newlyCreatedApiNode.getElementsByClassName("api-test")[0];
+    var $apiMethod = newlyCreatedApiNode.getElementsByClassName("api-method")[0];
+
+    var $dataRaw = newlyCreatedApiNode.getElementsByClassName("data-raw")[0];
+    this.$dataBeautify = newlyCreatedApiNode.getElementsByClassName("data-beautify")[0];
+    var $dataHighlight = newlyCreatedApiNode.getElementsByClassName("data-highlight")[0];
+    var $dataPreview = newlyCreatedApiNode.getElementsByClassName("data-preview")[0];
+    
+    this.$dataView = newlyCreatedApiNode.getElementsByClassName("data-view")[0];
 
     $apiEdit.addEventListener('click', function(ev) {
         $apiUri.disabled = false;
@@ -68,6 +108,22 @@ apiDom.prototype.bindEventsToMRCAPI = function(){
 
     $apiSave.addEventListener('click', function(ev) {
         $apiUri.disabled = true;
+    });
+
+    $apiTest.addEventListener('click', function(ev){
+        xhr($apiMethod.value, $apiUri.value, that.storeApiReturnData.bind(that));
+    });
+
+    $dataRaw.addEventListener('click', function(ev) {
+        that.jsonView(that.apiReturnData);
+    });
+
+    this.$dataBeautify.addEventListener('click', function(ev) {
+        that.jsonView(beautifyJSON(JSON.parse(that.apiReturnData)));
+    });
+
+    $dataHighlight.addEventListener('click', function(ev) {
+        that.jsonView(hightlightJSON(JSON.parse(that.apiReturnData)));
     });
 
 };
