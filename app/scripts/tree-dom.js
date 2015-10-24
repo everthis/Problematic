@@ -15,7 +15,7 @@ var perApiTpl = '<div class="api-info">' +
                     '<span class="api-save">save</span>' +
                     '<span class="api-test">test</span>' +
                 '</div>' +
-                '<div class="api-tree"></div>' +
+                '<div class="api-tree-wrapper"><div class="api-tree"></div></div>' +
                 '<div class="api-data">' +
                     '<div class="data-views-control">' +
                         '<span class="data-raw">raw</span>' +
