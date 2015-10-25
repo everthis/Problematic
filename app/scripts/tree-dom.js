@@ -126,6 +126,10 @@ apiDom.prototype.bindEventsToMRCAPI = function(){
         that.jsonView(hightlightJSON(JSON.parse(that.apiReturnData)));
     });
 
+    $dataPreview.addEventListener('click', function(ev) {
+        that.jsonView("This feature has not been accomplished yet.");
+    });
+
 };
 
 apiDom.prototype.operateDataRootChild = function () {
@@ -186,7 +190,8 @@ apiDom.prototype.delNode = function (ctx) {
 
     var obj = this.apiTree.applyStyle();
         this.styleNodes(obj);
-        // $apiTree.removeChild(currentLeaf);
+        this.setParentNodeVal(parentIdx);
+    
 };
 apiDom.prototype.removeNodesFromDom = function (arr) {
     var allLeaves = Array.prototype.slice.call(this.$apiTree.getElementsByClassName('leaf'));
@@ -222,6 +227,21 @@ apiDom.prototype.bindEventsToMRCE = function() {
   });
 
 };
+apiDom.prototype.setParentNodeVal = function(idx){
+  var leaves = Array.prototype.slice.call(this.$apiTree.getElementsByClassName('leaf'));
+  var queue = this.apiTree.traverseDirectChild(idx);
+  var queueLen = queue._newestIndex - queue._oldestIndex;
+  for (var i = 0, x = leaves.length; i < x; i++) {
+    if ( +leaves[i].dataset.index === idx) {
+      if (queueLen > 0) {
+        leaves[i].getElementsByClassName('leaf-value')[0].value = "--->";
+      } else {
+        leaves[i].getElementsByClassName('leaf-value')[0].value = "";
+      };
+      break;
+    };
+  };
+};
 apiDom.prototype.addChild = function (ctx) {
     this.leafIndex += 1;
     var parentIdex = +ctx.currentTarget.parentNode.dataset.index;
@@ -251,6 +271,7 @@ apiDom.prototype.addChild = function (ctx) {
     this.bindEventsToMRCE();
     var obj = this.apiTree.applyStyle();
     this.styleNodes(obj);
+    this.setParentNodeVal(parentIdex);
 
 };
 
