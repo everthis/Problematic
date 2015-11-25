@@ -66,6 +66,7 @@ module.exports = function (grunt) {
       options: {
         notify: false,
         background: true,
+        // logLevel: "debug",
         watchOptions: {
           ignored: ''
         }
