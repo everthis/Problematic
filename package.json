@@ -15,6 +15,7 @@
     "grunt-contrib-imagemin": "^0.9.3",
     "grunt-contrib-uglify": "^0.8.0",
     "grunt-contrib-watch": "^0.6.1",
+    "grunt-critical": "^0.1.7",
     "grunt-eslint": "^17.0.0",
     "grunt-filerev": "^2.2.0",
     "grunt-mocha": "^0.4.12",

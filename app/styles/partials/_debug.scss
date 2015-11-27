@@ -1,5 +1,13 @@
-#app {
-	input {
-		width: 8em;
-	}
+$colors: red, orange, yellow, green, blue, purple;
+$repeat: 20;
+
+@for $i from 1 through $repeat {
+    a:nth-child(#{length($colors)}n+#{$i}) {
+        background: lighten(nth($colors, random(length($colors))), 20%);
+    }
+}
+
+a {
+    list-style: none;
+    padding: 1em;
 }

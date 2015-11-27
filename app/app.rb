@@ -1,48 +1,17 @@
 # app.rb
 require 'sinatra'
+require 'net/http'
+require 'json'
 
-class Stream
-  def each
-    100.times { |i| yield "#{i}\n" }
-  end
-end
+get '/foo' do
+  headers \
+      "Access-Control-Allow-Origin"   => "*"
 
-# get('/home') { Stream.new }
-
-get '/test/:name' do
-	erb :test, :locals => {:name => params[:name]}
-end
-
-get '/index' do
-	"hello"
-end
-
-get '/*' do
-  # t = %w[text/css text/html application/javascript]
-  # request.accept              # ['text/html', '*/*']
-  # request.accept? 'text/xml'  # true
-  # request.preferred_type(t)   # 'text/html'
-  # request.body                # request body sent by the client (see below)
-  # request.scheme              # "http"
-  # request.script_name         # "/example"
-  # request.path_info           # "/foo"
-  # request.port                # 80
-  # request.request_method      # "GET"
-  # request.query_string        # ""
-  # request.content_length      # length of request.body
-  # request.media_type          # media type of request.body
-  # request.host                # "example.com"
-  # request.get?                # true (similar methods for other verbs)
-  # request.form_data?          # false
-  # request["some_param"]       # value of some_param parameter. [] is a shortcut to the params hash.
-  # request.referrer            # the referrer of the client or '/'
-  request.user_agent          # user agent (used by :agent condition)
-  # request.cookies             # hash of browser cookies
-  # request.xhr?                # is this an ajax request?
-  # request.url                 # "http://example.com/example/foo"
-  # request.path                # "/example/foo"
-  # request.ip                  # client IP address
-  # request.secure?             # false (would be true over ssl)
-  # request.forwarded?          # true (if running behind a reverse proxy)
-  # request.env                 # raw env hash handed in by Rack
+  content_type :json
+  uri = URI('http://yi.baidu.com/pc/doctor/listdata')
+  params = { :pageSize => 2, :page => 1, :departLevel1Id => 1, :provId => 1, :cityId => 1, :regionId => "all" }
+  uri.query = URI.encode_www_form(params)
+  res = Net::HTTP.get_response(uri)
+  res.body if res.is_a?(Net::HTTPSuccess)
+  # puts 'a' if res.body.is_a? String 
 end
