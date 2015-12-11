@@ -110,6 +110,20 @@ module.exports = function (grunt) {
       }
     },
 
+    grunticon: {
+        myIcons: {
+            files: [{
+                expand: true,
+                cwd: 'app/images/icons',
+                src: ['*.svg', '*.png'],
+                dest: "dist/output"
+            }],
+            options: {
+              enhanceSVG: true
+            }
+        }
+    },
+
     // Empties folders to start fresh
     clean: {
       dist: {
@@ -428,6 +442,10 @@ module.exports = function (grunt) {
     'filerev',
     'usemin',
     'htmlmin'
+  ]);
+
+  grunt.registerTask('svg', [
+    'grunticon:myIcons'
   ]);
 
   grunt.registerTask('default', [
